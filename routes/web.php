@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\ArtikelController;
 
 // Halaman Welcome (public)
 // Halaman utama (opsional)
@@ -44,3 +45,5 @@ require __DIR__.'/auth.php';
 Route::get('/foods', [FoodController::class, 'index'])->name('foods.index');
 Route::get('/foods/create', [FoodController::class, 'create'])->name('foods.create');
 Route::post('/foods', [FoodController::class, 'store'])->name('foods.store');
+
+Route::resource('artikels', ArtikelController::class);
