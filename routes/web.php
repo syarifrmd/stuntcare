@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ArtikelController;
+use App\Http\Controllers\PemantauanController;
 
 // Halaman Welcome (public)
 // Halaman utama (opsional)
@@ -47,3 +48,6 @@ Route::get('/foods/create', [FoodController::class, 'create'])->name('foods.crea
 Route::post('/foods', [FoodController::class, 'store'])->name('foods.store');
 
 Route::resource('artikels', ArtikelController::class);
+
+// Rute Pemantauan Gizi Harian
+
