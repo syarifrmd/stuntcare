@@ -18,9 +18,12 @@ use App\Filament\Resources\FoodsResource\RelationManagers;
 
 class FoodsResource extends Resource
 {
-    protected static ?string $model = Foods::class;
+    protected static ?string $model = Food::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-cube';
+    protected static ?string $navigationGroup = 'Makanan Bang';
+    protected static ?string $label = 'Makanan';
+    protected static ?string $pluralLabel = 'Daftar Makanan';
 
     public static function form(Form $form): Form
     {
@@ -39,26 +42,26 @@ class FoodsResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')->label('Nama')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('category')->label('Kategori')->sortable(),
+                Tables\Columns\TextColumn::make('energy')->label('Energi')->sortable(),
+                Tables\Columns\TextColumn::make('protein')->label('Protein')->sortable(),
+                Tables\Columns\TextColumn::make('fat')->label('Lemak')->sortable(),
+                Tables\Columns\TextColumn::make('carbohydrate')->label('Karbohidrat')->sortable(),
+                Tables\Columns\TextColumn::make('creator.name')
+                    ->label('Dibuat Oleh')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
