@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\FoodsResource\Pages;
-use App\Filament\Resources\FoodsResource\RelationManagers;
-use App\Models\Foods;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Foods;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\FoodsResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\FoodsResource\RelationManagers;
 
 class FoodsResource extends Resource
 {
@@ -23,7 +26,12 @@ class FoodsResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Section::make('Heading')
+                    ->description('')
+                    ->schema([
+                        TextInput::make('name')->required(),
+                    ])
+                    ->columns(2),
             ]);
     }
 
