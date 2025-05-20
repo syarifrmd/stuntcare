@@ -45,9 +45,9 @@ require __DIR__.'/auth.php';
 Route::get('/food', [FoodController::class, 'index'])->name('foods.index');
 Route::get('/food/create', [FoodController::class, 'create'])->name('foods.create');
 Route::post('/food', [FoodController::class, 'store'])->name('foods.store');
-
-Route::resource('artikels', ArtikelController::class);
-
-
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
 
+//Rute Artikel
+Route::resource('artikels', ArtikelController::class);
+
+//Rute Pemantauan gizi
