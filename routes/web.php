@@ -42,14 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 require __DIR__.'/auth.php';
 
 
-Route::resource('artikels', ArtikelController::class);
+Route::resource('artikel', ArtikelController::class);
 
 Route::resource('food', FoodController::class);
 
 
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
 
-//Rute Artikel
-Route::resource('artikels', ArtikelController::class);
 
-//Rute Pemantauan gizi

@@ -9,27 +9,14 @@
 </head>
 <body class="bg-white font-['Poppins']">
 
-  <!-- Navigation Bar -->
-  <header class="w-full h-28 bg-white rounded-bl-[40px] rounded-br-[40px] shadow">
-    <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between mt-6">
-      <div><img class="w-20 h-20" src="https://placehold.co/86x76" alt="Logo" /></div>
-      <nav class="flex items-center space-x-8">
-        <a href="/" class="text-black text-xl font-medium">Home</a>
-        <a href="#" class="text-black text-xl font-medium">About</a>
-        <a href="#" class="text-black text-xl font-medium">Feature</a>
-        <a href="#" class="text-black text-xl font-medium">Contact</a>
-        <a href="#" class="text-black text-xl font-medium">FAQ</a>
-        <a href="#" class="text-black text-xl font-semibold">Sign In</a>
-        <a href="#" class="bg-pink-500 text-white text-xl font-semibold px-4 py-1 rounded-[5px]">Register</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="max-w-7xl mx-auto px-4 py-10">
-    <!-- Title -->
-    <div class="mb-10 text-center">
-      <h1 class="text-pink-500 text-4xl font-semibold mb-4">Stunting Watch</h1>
-      <div class="inline-block w-80 h-12 bg-pink-500 rounded-[30px] flex items-center justify-center mx-auto">
+<x-app-layout>
+    <span name="header"></span>
+    
+    <main class="max-w-7xl mx-auto px-4 py-10">
+        <!-- Title -->
+        <div class="mb-10 text-center">
+            <h1 class="text-pink-500 text-4xl font-semibold mb-4">Stunting Watch</h1>
+            <div class="inline-block w-80 h-12 bg-pink-500 rounded-[30px] flex items-center justify-center mx-auto">
         <h2 class="text-white text-2xl font-semibold">Artikel Edukasi</h2>
       </div>
     </div>
@@ -39,7 +26,7 @@
       @foreach($artikels as $artikel)
         <div class="border border-pink-500 rounded-[30px] shadow-md overflow-hidden flex flex-col">
           <div class="bg-pink-500 py-4 px-6 text-white text-2xl font-semibold">
-            {{ $artikel->title }}
+              {{ $artikel->title }}
           </div>
           <div class="p-4 text-sm text-rose-900 flex-grow">
             <p>{{ \Illuminate\Support\Str::limit(strip_tags($artikel->topic), 100, '...') }}</p>
@@ -64,8 +51,8 @@
 
     <!-- Modal Artikel Terpilih -->
     @if(!empty($selectedArtikel))
-      <div 
-        id="static-modal" 
+    <div 
+    id="static-modal" 
         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden"
       >
         <div class="bg-white rounded-lg shadow-lg min-w-sm max-w-5xl  mx-4">
@@ -78,14 +65,14 @@
           </div>
           <!-- Body -->
           <div class="p-6 space-y-4 text-gray-800">
-            <p class="font-medium">Topik: {{ $selectedArtikel->topic }}</p>
+              <p class="font-medium">Topik: {{ $selectedArtikel->topic }}</p>
             <div class="prose max-w-none">
               {!! $selectedArtikel->content !!}
             </div>
           </div>
           <!-- Footer -->
           <div class="flex justify-end p-4 border-t">
-            <a 
+              <a 
               href="{{ route('artikel.index') }}" 
               class="text-pink-600 hover:underline"
             >&larr; Kembali ke daftar</a>
@@ -102,9 +89,10 @@
               document.getElementById('static-modal').classList.add('hidden');
             });
         });
-      </script>
+        </script>
     @endif
-
-  </main>
+    
+</x-app-layout>
+</main>
 </body>
 </html>
