@@ -12,6 +12,7 @@ class DailyIntake extends Model
 
     protected $table = 'daily_intakes';
     protected $fillable = [
+         'user_id',
         'child_id',
         'food_id',
         'time_of_day',

@@ -1,17 +1,20 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Food;
+use App\Models\Children;
 use Illuminate\Http\Request;
-use App\Models\Foods;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class FoodController extends Controller
 {
     // Menampilkan semua data makanan
     public function index()
     {
-        $foods = Foods::all();
-        return view('foods.index', compact('foods'));
+        $foods = Food::all();
+        $child = Children::where('user_id', Auth::id())->first(); // atau yang sedang dipilih user
+        return view('foods.index', compact('foods', 'child'));
     }
 
     // Menampilkan form tambah data
@@ -32,8 +35,9 @@ class FoodController extends Controller
             'carbohydrate' => 'numeric',
         ]);
 
-        Foods::create($request->all());
+        Food::create($request->all());
 
-        return redirect()->route('foods.index')->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('food.index')->with('success', 'Data berhasil disimpan!');
+
     }
 }

@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ArtikelController;
-
+use App\Http\Controllers\DailyIntakeController;
 // Halaman Welcome (public)
 // Halaman utama (opsional)
 Route::get('/', function () {
@@ -41,9 +41,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__.'/auth.php';
 
-// Rute untuk fitur makanan
-Route::get('/foods', [FoodController::class, 'index'])->name('foods.index');
-Route::get('/foods/create', [FoodController::class, 'create'])->name('foods.create');
-Route::post('/foods', [FoodController::class, 'store'])->name('foods.store');
 
-Route::resource('artikel', ArtikelController::class);
+Route::resource('artikels', ArtikelController::class);
+
+Route::resource('food', FoodController::class);
+
+
+Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
+
+//Rute Artikel
+Route::resource('artikels', ArtikelController::class);
+
+//Rute Pemantauan gizi
