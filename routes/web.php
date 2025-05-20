@@ -46,4 +46,4 @@ Route::get('/foods', [FoodController::class, 'index'])->name('foods.index');
 Route::get('/foods/create', [FoodController::class, 'create'])->name('foods.create');
 Route::post('/foods', [FoodController::class, 'store'])->name('foods.store');
 
-Route::resource('artikels', ArtikelController::class);
+Route::resource('artikel', ArtikelController::class);
