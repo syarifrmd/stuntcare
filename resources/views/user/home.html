@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - StuntCare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <style>
+        .typing {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1c1c1c;
+        }
+
+        .carousel-item {
+            transition: transform 0.5s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-pink-600 p-4">
+        <div class="max-w-screen-xl mx-auto flex justify-between items-center text-white">
+            <div class="text-2xl font-semibold">
+                <a href="/" class="hover:text-gray-200">StuntCare</a>
+            </div>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-gray-200">Home</a>
+                <a href="/pemantauan" class="hover:text-gray-200">Pemantauan</a>
+                <a href="/about" class="hover:text-gray-200">About</a>
+                <a href="/contact" class="hover:text-gray-200">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="w-full min-h-screen pt-28 relative">
+        <div class="w-full h-[811px] relative">
+            <div class="w-[1310px] max-w-full mx-auto h-[708px] bg-pink-50 rounded-3xl shadow-sm relative">
+                <div class="flex flex-wrap">
+                    <!-- Left Content -->
+                    <div class="w-full lg:w-1/2 p-12 flex flex-col justify-center">
+                        <h1 class="text-5xl font-bold text-pink-500 leading-tight mb-8">
+                            Tumbuh Kembang Optimal
+                        </h1>
+                        <p class="text-xl text-pink-500 mb-8">
+                            Pantau perkembangan anak secara menyeluruh, jaga asupan gizi harian, dan wujudkan generasi sehat dan cerdas sejak dini bersama Stuntcare
+                        </p>
+                        <button class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-pink-600 transition w-48">
+                            Mulai Sekarang
+                        </button>
+                    </div>
+
+                    <!-- Right Image -->
+                    <div class="hidden lg:block lg:w-1/2 relative">
+                        <img class="w-full h-[747px] object-cover absolute right-0 top-[-40px] rounded-tl-[90px] rounded-tr-3xl rounded-bl-[200px] rounded-br-3xl"
+                             src="/assets/hero-image.jpg" alt="Ibu dan anak sehat">
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-3xl mx-auto text-center mt-16">
+                <p class="text-xl text-pink-500 font-normal">
+                    "Jangan biarkan stunting menghambat masa depan anak. Stuntcare hadir untuk bantu pantau dan jaga kesehatannya sejak dini."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Welcome Text with Typing Animation -->
+    <div class="flex justify-center items-center mb-10">
+        <h1 class="text-4xl font-semibold text-gray-800">Selamat datang, <span class="text-pink-500">{{ Auth::user()->name }}</span></h1>
+    </div>
+    <div class="flex justify-center items-center mb-10">
+        <span class="typing" id="typing"></span>
+    </div>
+
+    <!-- Features Section -->
+    <section class="w-full bg-gradient-to-b from-pink-50 rounded-tl-[700px] rounded-tr-[700px] py-24">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-5xl font-semibold text-pink-500 text-center mb-16">
+                Wujudkan Generasi Sehat melalui Pemantauan Gizi Harian
+            </h2>
+
+            <div class="flex justify-center mb-20">
+                <img class="w-full max-w-4xl h-auto rounded-3xl" src="/assets/features-image.jpg" alt="Pemantauan gizi anak">
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
+                <!-- Feature 1 -->
+                <div class="flex flex-col space-y-4">
+                    <img class="w-full h-80 object-cover rounded-3xl" src="/assets/feature-1.jpg" alt="Pencegahan stunting">
+                    <p class="text-xl">
+                        Stunting dapat dicegah melalui gizi seimbang, pemantauan tumbuh kembang rutin, dan perawatan sejak hamil hingga usia 5 tahun. Stuntcare hadir untuk mendukung orang tua dalam menjaga kesehatan anak setiap hari.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="flex flex-col space-y-4">
+                    <img class="w-full h-64 object-cover rounded-3xl" src="/assets/feature-2.jpg" alt="Perkembangan anak">
+                    <p class="text-xl">
+                        Perkembangan anak yang cepat adalah periode di mana anak mengalami peningkatan pertumbuhan fisik yang signifikan dalam waktu singkat. Ini sering terjadi pada bayi dan balita masa pubertas.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="flex flex-col space-y-4">
+                    <img class="w-full h-64 object-cover rounded-3xl" src="/assets/feature-3.jpg" alt="Konsultasi dokter">
+                    <p class="text-xl">
+                        Dapatkan jawaban cepat dari dokter seputar pertumbuhan, pola makan, dan kesehatan anak. Fitur ini memudahkan orang tua berkonsultasi secara asinkron, cukup melalui aplikasi secara aman dan terpercaya.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carousel Artikel -->
+    <div class="relative">
+        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @foreach($articles as $index => $article)
+                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <img src="{{ $article->image_url }}" class="w-full h-56 object-cover rounded-md mb-4" alt="Article Image">
+                        <h3 class="text-xl font-semibold text-pink-500">{{ $article->title }}</h3>
+                        <p class="text-gray-700 mt-2">{{ Str::limit($article->content, 150) }}</p>
+                        <a href="/article/{{ $article->id }}" class="text-pink-600 mt-4 inline-block">Baca lebih banyak</a>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

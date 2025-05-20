@@ -62,6 +62,7 @@
                             <option value="Pagi">Pagi</option>
                             <option value="Siang">Siang</option>
                             <option value="Malam">Malam</option>
+                            <option value="Malam">Cemilan</option>
                         </select>
                         <button type="submit" class="bg-pink-500 text-white text-sm px-3 py-1 rounded hover:bg-pink-600 w-full">+ Tambah</button>
                     </form>

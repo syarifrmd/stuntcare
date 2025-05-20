@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\DailyIntakeController;
+use App\Http\Controllers\PemantauanController;
+use App\Http\Controllers\ChildrenController;
+
 // Halaman Welcome (public)
 // Halaman utama (opsional)
 Route::get('/', function () {
@@ -45,7 +48,8 @@ require __DIR__.'/auth.php';
 Route::resource('artikel', ArtikelController::class);
 
 Route::resource('food', FoodController::class);
-
+Route::resource('pemantauan', PemantauanController::class);
+Route::resource('children', ChildrenController::class);
 
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
 
