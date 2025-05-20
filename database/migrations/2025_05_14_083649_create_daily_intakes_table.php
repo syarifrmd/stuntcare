@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('child_id')->constrained('children')->onDelete('cascade');
             $table->foreignId('food_id')->constrained('foods')->onDelete('cascade');
-            $table->enum('time_of_day', ['Pagi', 'Siang', 'Malam']);
+            $table->enum('time_of_day', ['Pagi', 'Siang', 'Malam','Cemilan']);
             $table->float('portion')->default(1); // jumlah porsi
             $table->date('date');
             $table->timestamps();

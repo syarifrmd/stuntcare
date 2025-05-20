@@ -15,7 +15,7 @@ class DailyIntakeController extends Controller
     $request->validate([
         'food_id' => 'required|exists:foods,id',
         'child_id' => 'nullable|exists:children,id',
-        'time_of_day' => 'required|in:Pagi,Siang,Malam',
+        'time_of_day' => 'required|in:Pagi,Siang,Malam, Cemilan',
     ]);
 
     DailyIntake::create([
