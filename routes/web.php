@@ -41,12 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__.'/auth.php';
 
-// Rute untuk fitur makanan
-Route::get('/food', [FoodController::class, 'index'])->name('foods.index');
-Route::get('/food/create', [FoodController::class, 'create'])->name('foods.create');
-Route::post('/food', [FoodController::class, 'store'])->name('foods.store');
 
 Route::resource('artikels', ArtikelController::class);
+
+Route::resource('food', FoodController::class);
 
 
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');

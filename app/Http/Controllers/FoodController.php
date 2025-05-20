@@ -37,6 +37,7 @@ class FoodController extends Controller
 
         Food::create($request->all());
 
-        return redirect()->route('foods.index')->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('food.index')->with('success', 'Data berhasil disimpan!');
+
     }
 }
