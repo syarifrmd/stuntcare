@@ -8,6 +8,7 @@ use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\DailyIntakeController;
 use App\Http\Controllers\PemantauanController;
 use App\Http\Controllers\ChildrenController;
+use App\Http\Controllers\HomeController;
 
 // Halaman Welcome (public)
 // Halaman utama (opsional)
@@ -33,9 +34,10 @@ Route::get('/redirect', function () {
 
 // Dashboard untuk user biasa
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/user/dashboard', function () {
-        return view('user.dashboard');
-    })->name('user.dashboard');
+    //Route::get('/user/dashboard', function () {
+      //  return view('user.dashboard');
+    //})->name('user.dashboard');
+    Route::get('/user/dashboard', [HomeController::class, 'dashboard'])->name('user.dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
