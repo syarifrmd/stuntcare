@@ -8,6 +8,7 @@ use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\DailyIntakeController;
 use App\Http\Controllers\PemantauanController;
 use App\Http\Controllers\ChildrenController;
+use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\HomeController;
 
 // Halaman Welcome (public)
@@ -52,6 +53,7 @@ Route::resource('artikel', ArtikelController::class);
 Route::resource('food', FoodController::class);
 Route::resource('pemantauan', PemantauanController::class);
 Route::resource('children', ChildrenController::class);
+Route::resource('histori', HistoriController::class);
 
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
 

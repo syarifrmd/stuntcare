@@ -13,6 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Memanggil seeder lain
+        $this->call([
+            DailyNutritionSummariesSeeder::class,
+            NutritionNeedsByAgeSeeder::class,
+        ]);
+
         // User::factory(10)->create();
 
         User::factory()->create([
