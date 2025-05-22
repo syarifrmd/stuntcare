@@ -28,7 +28,7 @@
         }
     </style>
 </head>
-<body class="bg-white">
+<body class="">
 <x-app-layout>
     <span name="header"></span>
     <!-- Main Content -->
@@ -176,7 +176,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const texts = [
-                'Mari mulai perjalanan sehat bersama StuntCare!',
                 'Pantau tumbuh kembang anak dengan mudah',
                 'Konsultasi dengan dokter kapan saja',
                 'Jaga gizi harian untuk masa depan yang cerah'
