@@ -2,14 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\FoodsResource\Pages;
-use App\Models\Food;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\Food;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\FileUpload;
+use App\Filament\Resources\FoodsResource\Pages;
 
 class FoodsResource extends Resource
 {
@@ -28,6 +29,14 @@ class FoodsResource extends Resource
                     ->label('Nama Makanan')
                     ->required()
                     ->maxLength(100),
+
+                
+                FileUpload::make('foto')
+                    ->label('Foto Makanan')
+                    ->image()
+                    ->directory('makanan')
+                    ->imagePreviewHeight('150')
+                    ->columnSpanFull(),    
 
                 Forms\Components\Select::make('category')
                     ->label('Kategori')

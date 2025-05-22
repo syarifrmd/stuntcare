@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('foods', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // nama makanan
+            $table->string('foto')->nullable(); //foto makanan
             $table->enum('category', ['Makanan Pokok', 'Sayuran', 'Lauk Pauk', 'Buah']); // kategori
             $table->float('energy')->default(0);       // kalori (kkal)
             $table->float('protein')->default(0);      // protein (gram)
