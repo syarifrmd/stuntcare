@@ -88,6 +88,12 @@
         @foreach($foods as $food)
         <div class="bg-pink-50 rounded-lg shadow p-4">
             <h3 class="text-lg font-semibold text-rose-900 mb-2">{{ $food->name }}</h3>
+                <div class="w-full h-32 rounded mb-2 overflow-hidden"> 
+                    @if ($food->foto) <img src="{{ asset('storage/' . $food->foto) }}" alt="{{ $food->name }}" 
+                    class="w-full h-full object-cover rounded"> @else 
+                    <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-sm"> Tidak ada gambar </div>
+                     @endif 
+                </div>
             <p class="text-sm text-gray-700">Kategori: {{ $food->category }}</p>
             <p class="text-sm text-gray-700">Energi: {{ $food->energy }} kkal</p>
             <p class="text-sm text-gray-700">Protein: {{ $food->protein }} g</p>

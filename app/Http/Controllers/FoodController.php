@@ -26,6 +26,11 @@ class FoodController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('foods', 'public');
+            $data['foto'] = $path;
+        }
+
         $foods = $query->get();
 
         return view('foods.index', compact('foods', 'child'));

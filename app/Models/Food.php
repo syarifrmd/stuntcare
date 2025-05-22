@@ -20,6 +20,7 @@ class Food extends Model
         'fat',
         'carbohydrate',
         'created_by',
+        'foto',
     ];
 
     /**
