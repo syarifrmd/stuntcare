@@ -29,5 +29,19 @@ class DailyIntakeController extends Controller
 
     return redirect()->back()->with('success', 'Makanan berhasil ditambahkan ke konsumsi harian.');
 }
+    public function store(Request $request)
+{
+    foreach ($request->intakes as $intake) {
+        DailyIntake::create([
+            'child_id' => $intake['child_id'],
+            'food_id' => $intake['food_id'],
+            'portion' => $intake['portion'],
+            'time_of_day' => $request->time_of_day,
+        ]);
+    }
+
+    return redirect()->back()->with('success', 'Data makanan berhasil disimpan untuk semua anak.');
+}
+
 
 }

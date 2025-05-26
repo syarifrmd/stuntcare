@@ -115,9 +115,12 @@
 
     <!-- Tombol Tambah Makanan -->
     <div class="flex justify-center mt-10">
-      <a href="{{ route('food.store') }}" class="px-6 py-2 bg-pink-500 text-white rounded">Tambah Makanan Lainnya</a>
+      <a href="{{ route('food.index', ['child_id' => $child->id]) }}" class="px-6 py-2 bg-pink-500 text-white rounded">Tambah Makanan Lainnya</a>
     </div>
 </div>
+
+
+
 </x-app-layout>
 </body>
 </html>

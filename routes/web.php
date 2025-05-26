@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ArtikelController;
-use App\Http\Controllers\DailyIntakeController;
-use App\Http\Controllers\PemantauanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChildrenController;
+use App\Http\Controllers\PemantauanController;
+use App\Http\Controllers\DailyIntakeController;
+use App\Http\Controllers\LihatProfilController;
 
 // Halaman Welcome (public)
 // Halaman utama (opsional)
@@ -52,5 +53,10 @@ Route::resource('pemantauan', PemantauanController::class);
 Route::resource('children', ChildrenController::class);
 
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
+Route::post('/dailyintakes', [DailyIntakeController::class, 'store'])->name('dailyintakes.store');
+
+
+
+Route::resource('lihatprofile', LihatProfilController::class);
 
 
