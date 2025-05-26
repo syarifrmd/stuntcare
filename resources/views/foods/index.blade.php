@@ -40,6 +40,7 @@
             <option value="Sayuran" {{ request('category') == 'Sayuran' ? 'selected' : '' }}>Sayuran</option>
             <option value="Lauk Pauk" {{ request('category') == 'Lauk Pauk' ? 'selected' : '' }}>Lauk Pauk</option>
             <option value="Buah" {{ request('category') == 'Buah' ? 'selected' : '' }}>Buah</option>
+            <option value="Cemilan" {{ request('category') == 'Cemilan' ? 'selected' : '' }}>Cemilan</option>
         </select>
     </form>
 
@@ -60,6 +61,7 @@
                     <option value="Sayuran">Sayuran</option>
                     <option value="Lauk Pauk">Lauk Pauk</option>
                     <option value="Buah">Buah</option>
+                    <option value="Cemilan">Cemilan</option>
                 </select>
                 <input type="number" name="energy" placeholder="Energi (kkal)" class="w-full border rounded px-3 py-2">
                 <input type="number" name="protein" placeholder="Protein (g)" class="w-full border rounded px-3 py-2">

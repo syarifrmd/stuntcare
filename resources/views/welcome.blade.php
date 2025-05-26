@@ -3,149 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite('resources/css/app.css')
     <title>StuntCare - Pantau Gizi Anak Cegah Stunting</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'pink-stunt': '#FF69B4',
-                        'pink-light': '#FFD1DC',
+                        'pink-stunt': '#FF69B4', // Main brand pink
+                        'pink-light': '#FFD1DC', // Lighter pink
+                        'pink-dark': '#D1478E',  // Darker pink for hover/accents
+                    },
+                    animation: {
+                        'slide-in-left': 'slideInFromLeft 0.7s ease-out forwards',
+                        'slide-in-right': 'slideInFromRight 0.7s ease-out forwards',
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'pop-in': 'popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards',
+                        'pop-in-tr': 'popInTR 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.5s forwards', // Delay for top-right
+                        'pop-in-bl': 'popInBL 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.7s forwards', // Delay for bottom-left
+                        'subtle-bob': 'subtleBob 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        slideInFromLeft: {
+                            '0%': { transform: 'translateX(-50px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideInFromRight: {
+                            '0%': { transform: 'translateX(50px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        popIn: {
+                            '0%': { transform: 'scale(0.8)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        popInTR: { // Pop in from Top Right
+                            '0%': { transform: 'translate(30px, -30px) scale(0.8)', opacity: '0' },
+                            '100%': { transform: 'translate(0, 0) scale(1)', opacity: '1' },
+                        },
+                        popInBL: { // Pop in from Bottom Left
+                            '0%': { transform: 'translate(-30px, 30px) scale(0.8)', opacity: '0' },
+                            '100%': { transform: 'translate(0, 0) scale(1)', opacity: '1' },
+                        },
+                        subtleBob: {
+                            '0%': { transform: 'translateY(0px)' },
+                            '100%': { transform: 'translateY(-10px)' },
+                        }
                     }
                 }
             }
         }
     </script>
-    <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        .typing {
+            border-right: 2px solid #ec4899;
+            animation: blink 1s infinite;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(180deg, #FFF 0%, #FFE6F0 100%);
+            background: linear-gradient(180deg, #FFFFFF 0%, #FFF0F7 100%); /* Softer pink gradient */
+            overflow-x: hidden; /* Prevent horizontal scrollbars */
+        }
+        /* Styling for the 3D canvas container in Hero */
+        #threejs-hero-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind other hero content elements */
+            opacity: 0.6; /* Make it subtle */
+            pointer-events: none; /* Allow clicks to pass through */
+        }
+        /* Ensure hero content is above the 3D canvas */
+        .hero-content-item {
+            position: relative;
+            z-index: 1;
+        }
+        .hero-interactive-card {
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+        .hero-interactive-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.3); /* pink-stunt shadow */
+        }
+        .feature-card, .testimonial-card {
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+        .feature-card:hover, .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+        .faq-button {
+            transition: background-color 0.3s ease;
+        }
+        .faq-button:hover {
+            background-color: #D1478E; /* pink-dark */
+        }
+        .faq-content {
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding-top 0.5s ease-in-out, padding-bottom 0.5s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding-left: 1.5rem; /* px-6 */
+            padding-right: 1.5rem; /* px-6 */
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .faq-content.open {
+            opacity: 1;
+            padding-top: 1rem; /* py-4 */
+            padding-bottom: 1rem; /* py-4 */
+            /* max-height will be set by JS to content.scrollHeight */
+        }
+        /* Smooth scroll for nav links */
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Navbar -->
-    <nav class="bg-white py-4 shadow-sm">
+    <nav class="bg-white py-4 shadow-md fixed w-full z-50 top-0">
         <div class="container mx-auto px-4 flex justify-between items-center">
-            <a href="#" class="flex items-center">
-                <div class="text-pink-stunt mr-2">
-                        <img src="{{ asset('images/logo.png') }}" alt="Dokter StuntCare" class="mx-auto w-fit h-10">
-                </div>
+            <a href="#hero" class="flex items-center">
+                <img src="{{asset('images/logo.png')}}" alt="StuntCare Logo" class="h-10">
             </a>
             
             <div class="hidden md:flex space-x-8">
-                <a href="#" class="text-gray-800 font-medium">Home</a>
-                <a href="#" class="text-gray-800 font-medium">About</a>
-                <a href="#" class="text-gray-800 font-medium">Feature</a>
-                <a href="#" class="text-gray-800 font-medium">Contact</a>
-                <a href="#" class="text-gray-800 font-medium">FAQ</a>
+                <a href="#hero" class="text-gray-700 hover:text-pink-stunt font-medium transition-colors duration-300">Home</a>
+                <a href="#about" class="text-gray-700 hover:text-pink-stunt font-medium transition-colors duration-300">About</a>
+                <a href="#features" class="text-gray-700 hover:text-pink-stunt font-medium transition-colors duration-300">Feature</a>
+                <a href="#feedback" class="text-gray-700 hover:text-pink-stunt font-medium transition-colors duration-300">Contact</a>
+                <a href="#faq" class="text-gray-700 hover:text-pink-stunt font-medium transition-colors duration-300">FAQ</a>
             </div>
             
             <div class="flex items-center space-x-4">
-                <a href="{{ route('login') }}" class="text-gray-800 font-medium">Sign In</a>
-                <a href="{{ route('register') }}" class="bg-pink-stunt hover:bg-pink-600 text-white font-medium px-6 py-2 rounded-full transition duration-300">Register</a>
+                 <a href="{{route('login')}}" class="text-gray-700 hover:text-pink-stunt font-medium transition-colors duration-300">Sign In</a>
+                 <a href="{{route('register')}}" class="bg-pink-stunt hover:bg-pink-dark text-white font-medium px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105">Register</a>
             </div>
-
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="py-20 bg-pink-50">
+    <section id="hero" class="pt-32 pb-20 bg-pink-50 relative overflow-hidden">
         <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
-            <div class="md:w-1/2 mb-12 md:mb-0">
-                <h1 class="text-4xl md:text-5xl font-bold text-pink-stunt leading-tight mb-4">
-                    Pantau Gizi Anak<br>Cegah Stunting<br>Lebih Awal
-                </h1>
-                <p class="text-gray-700 text-lg mb-8">
+            <div class="md:w-1/2 mb-12 md:mb-0 animate-slide-in-left hero-content-item">
+                <div class="text-7xl md:text-5xl font-bold text-pink-stunt leading-tight mb-6">
+                    <span class="typing" id="typing">Mari mulai perjalanan sehat bersama StuntCare!</span>
+                </div>
+                <p class="text-gray-700 text-lg mb-10">
                     Dengan fitur pemantauan makanan, edukasi artikel, dan pengingat harian, StuntCare
-                    hadir sebagai partner Anda dalam tumbuh kembang anak yang optimal
+                    hadir sebagai partner Anda dalam tumbuh kembang anak yang optimal.
                 </p>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="#" class="bg-pink-stunt hover:bg-pink-600 text-center text-white font-medium px-8 py-3 rounded-full transition duration-300">Ayo Pantau!</a>
-                    <a href="#" class="border border-pink-stunt text-center text-pink-stunt hover:bg-pink-50 font-medium px-8 py-3 rounded-full transition duration-300">Jelajahi</a>
+                    <a href="#" class="bg-pink-stunt hover:bg-pink-dark text-center text-white font-medium px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">Ayo Pantau!</a>
+                    <a href="#" class="border-2 border-pink-stunt text-center text-pink-stunt hover:bg-pink-stunt hover:text-white font-medium px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105">Jelajahi</a>
                 </div>
             </div>
-            
-            <div class="md:w-1/2 relative">
-                <div class="bg-pink-200 rounded-lg p-6 relative">
-                    <img src="{{ asset('images/dokter.png') }}" alt="Dokter StuntCare" class="mx-auto rounded-lg w-fit h-96">
+
+            <div class="md:w-1/2 relative animate-slide-in-right">
+                <div id="threejs-hero-container"></div> <div class="bg-pink-200/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 relative shadow-2xl hero-content-item">
+                     <img src="{{asset('images/dokter.png')}}" alt="Dokter StuntCare" class="mx-auto rounded-lg w-auto h-80 sm:h-96 object-contain animate-subtle-bob">
                     
-                    <div class="absolute top-6  right-0 w-max bg-white rounded-lg p-3 shadow-md">
+                    <div class="hero-interactive-card absolute top-4 sm:top-6 right-2 sm:right-0 bg-white rounded-lg p-3 shadow-md animate-pop-in-tr w-48 sm:w-max">
                         <div class="flex items-center">
                             <div>
-                                <p class="font-semibold text-sm">Dr. Nadine A Sp.A</p>
-                                <p class="text-xs text-gray-500">Salah satu dokter terbaik di StuntCare</p>
+                                <p class="font-semibold text-xs sm:text-sm">Dr. Nadine A Sp.A</p>
+                                <p class="text-xxs sm:text-xs text-gray-500">Salah satu dokter terbaik</p>
                             </div>
-                            <img src="{{ asset('images/dokter.png') }}" alt="Doctor Avatar" class="w-8 h-8 rounded-full ml-2">
+                            <img src="{{asset('images/dokter.png')}}" alt="Doctor Avatar" class="w-8 h-8 rounded-full ml-2 hidden sm:block">
                         </div>
-                        <div class="bg-pink-stunt text-white text-xs font-medium px-2 py-1 rounded mt-1 text-center">
+                        <div class="bg-pink-stunt text-white text-xxs sm:text-xs font-medium px-2 py-1 rounded mt-1 text-center">
                             Terverifikasi
                         </div>
                     </div>
-                    
-                    <div class="absolute bottom-6 left-6 bg-white rounded-lg p-4 shadow-md w-64">
-                        <p class="font-semibold text-sm mb-2">Pemantauan Harian</p>
-                        
-                        <div class="space-y-2">
+
+                    <div class="hero-interactive-card absolute bottom-4 sm:bottom-6 left-2 sm:left-6 bg-white rounded-lg p-3 sm:p-4 shadow-md w-52 sm:w-64 animate-pop-in-bl">
+                        <p class="font-semibold text-xs sm:text-sm mb-2">Pemantauan Harian</p>
+                        <div class="space-y-1 sm:space-y-2">
                             <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span>Karbohidrat</span>
-                                    <span>60%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-pink-stunt h-2 rounded-full" style="width: 60%"></div>
-                                </div>
+                                <div class="flex justify-between text-xxs sm:text-xs mb-0.5 sm:mb-1"><span>Karbohidrat</span><span>60%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 sm:h-2"><div class="bg-pink-stunt h-1.5 sm:h-2 rounded-full" style="width: 60%"></div></div>
                             </div>
-                            
                             <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span>Protein</span>
-                                    <span>75%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-pink-stunt h-2 rounded-full" style="width: 75%"></div>
-                                </div>
+                                <div class="flex justify-between text-xxs sm:text-xs mb-0.5 sm:mb-1"><span>Protein</span><span>75%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 sm:h-2"><div class="bg-pink-stunt h-1.5 sm:h-2 rounded-full" style="width: 75%"></div></div>
                             </div>
-                            
                             <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span>Vitamin</span>
-                                    <span>100%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-pink-stunt h-2 rounded-full" style="width: 100%"></div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span>Mineral</span>
-                                    <span>100%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-pink-stunt h-2 rounded-full" style="width: 100%"></div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span>Lemak</span>
-                                    <span>100%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-pink-stunt h-2 rounded-full" style="width: 100%"></div>
-                                </div>
+                                <div class="flex justify-between text-xxs sm:text-xs mb-0.5 sm:mb-1"><span>Vitamin</span><span>100%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 sm:h-2"><div class="bg-pink-stunt h-1.5 sm:h-2 rounded-full" style="width: 100%"></div></div>
                             </div>
                         </div>
-                        
-                        <button class="bg-pink-stunt hover:bg-pink-600 text-white text-xs font-medium px-4 py-2 rounded-lg w-full mt-3 transition duration-300">
+                        <button class="bg-pink-stunt hover:bg-pink-dark text-white text-xxs sm:text-xs font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-md sm:rounded-lg w-full mt-2 sm:mt-3 transition duration-300">
                             Belum Terpenuhi
                         </button>
                     </div>
@@ -154,177 +211,118 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="py-16">
+    <section id="features" class="py-16 animate-fade-in">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Fitur StuntCare</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Feature 1 -->
-                <div class="bg-white rounded-lg p-8 shadow-md hover:shadow-lg transition duration-300">
-                    <div class="bg-pink-100 text-pink-stunt p-3 rounded-lg inline-block mb-4">
-                        <i class="fas fa-chart-bar text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-pink-stunt mb-4">Pemantauan Gizi</h3>
-                    <p class="text-gray-600">
-                        Lacak asupan energi, protein, lemak, dan karbohidrat anak setiap hari.
-                    </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                    <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-chart-bar text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-pink-stunt mb-3">Pemantauan Gizi</h3>
+                    <p class="text-gray-600 text-sm">Lacak asupan energi, protein, lemak, dan karbohidrat anak setiap hari.</p>
                 </div>
-                
-                <!-- Feature 2 -->
-                <div class="bg-white rounded-lg p-8 shadow-md hover:shadow-lg transition duration-300">
-                    <div class="bg-pink-100 text-pink-stunt p-3 rounded-lg inline-block mb-4">
-                        <i class="fas fa-globe text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-pink-stunt mb-4">Artikel Edukasi</h3>
-                    <p class="text-gray-600">
-                        Dapatkan konten informatif seputar nutrisi dan pencegahan stunting.
-                    </p>
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                    <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-book-open text-2xl"></i></div> <h3 class="text-xl font-semibold text-pink-stunt mb-3">Artikel Edukasi</h3>
+                    <p class="text-gray-600 text-sm">Dapatkan konten informatif seputar nutrisi dan pencegahan stunting.</p>
                 </div>
-                
-                <!-- Feature 3 -->
-                <div class="bg-white rounded-lg p-8 shadow-md hover:shadow-lg transition duration-300">
-                    <div class="bg-pink-100 text-pink-stunt p-3 rounded-lg inline-block mb-4">
-                        <i class="fas fa-bell text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-pink-stunt mb-4">Pengingat Harian</h3>
-                    <p class="text-gray-600">
-                        Ingatkan konsumsi makanan sesuai kebutuhan harian anak.
-                    </p>
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                    <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-bell text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-pink-stunt mb-3">Pengingat Harian</h3>
+                    <p class="text-gray-600 text-sm">Ingatkan konsumsi makanan sesuai kebutuhan harian anak.</p>
                 </div>
-                
-                <!-- Feature 4 -->
-                <div class="bg-white rounded-lg p-8 shadow-md hover:shadow-lg transition duration-300">
-                    <div class="bg-pink-100 text-pink-stunt p-3 rounded-lg inline-block mb-4">
-                        <i class="fas fa-stethoscope text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-pink-stunt mb-4">Konsultasi Dokter</h3>
-                    <p class="text-gray-600">
-                        Terhubung ke dokter anak langsung via WhatsApp.
-                    </p>
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                    <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-stethoscope text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-pink-stunt mb-3">Konsultasi Dokter</h3>
+                    <p class="text-gray-600 text-sm">Terhubung ke dokter anak langsung via WhatsApp.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About StuntCare Section -->
-    <section class="py-16 bg-pink-50">
+    <section id="about" class="py-16 bg-pink-50 overflow-hidden">
         <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/3 mb-8 md:mb-0">
-                    <img src="{{ asset('images/dokteranak.png') }}" alt="Keluarga dengan anak" class="rounded-lg w-full h-auto">
+            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                <div class="md:w-1/3 animate-slide-in-left">
+                    <img src="{{asset('images/dokteranak.png')}}" alt="Keluarga dengan anak" class="rounded-lg shadow-xl w-full h-auto object-cover">
                 </div>
-                
-                <div class="md:w-2/3 md:pl-12">
+                <div class="md:w-2/3 animate-slide-in-right">
                     <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt mb-6">Tentang StuntCare</h2>
-                    
-                    <p class="text-gray-700 mb-4">
-                        StuntCare adalah aplikasi pintar yang dirancang untuk membantu orang tua dalam memantau asupan gizi anak sehari-hari. Kami percaya bahwa pencegahan stunting dimulai dari pengetahuan stunting dimulai dari pengetahuan tepat yang didukung oleh teknologi.
-                    </p>
-                    
-                    <p class="text-gray-700 mb-4">
-                        Dengan menggabungkan data gizi, edukasi kesehatan, serta pengingat harian, StuntCare hadir sebagai solusi praktis dan terpercaya untuk memaksimalkan tumbuh kembang anak Anda.
-                    </p>
-                    
-                    <p class="text-gray-700">
-                        Kami tidak hanya menyajikan data, tapi juga menghadirkan pemahaman — ingat selalu orang tua hebat membuat keputusan terbaik untuk buah hati tercinta.
-                    </p>
+                    <p class="text-gray-700 mb-4 leading-relaxed">StuntCare adalah aplikasi pintar yang dirancang untuk membantu orang tua dalam memantau asupan gizi anak sehari-hari. Kami percaya bahwa pencegahan stunting dimulai dari pengetahuan tepat yang didukung oleh teknologi.</p>
+                    <p class="text-gray-700 mb-4 leading-relaxed">Dengan menggabungkan data gizi, edukasi kesehatan, serta pengingat harian, StuntCare hadir sebagai solusi praktis dan terpercaya untuk memaksimalkan tumbuh kembang anak Anda.</p>
+                    <p class="text-gray-700 leading-relaxed">Kami tidak hanya menyajikan data, tapi juga menghadirkan pemahaman — ingat selalu orang tua hebat membuat keputusan terbaik untuk buah hati tercinta.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section class="py-16">
+    <section id="testimonials" class="py-16 animate-fade-in">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Apa Orang Bilang?</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Testimonial 1 -->
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Apa Kata Mereka?</h2> <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
                     <div class="flex items-center mb-4">
-                        <img src="{{ asset('images/budinda.png') }}" alt="Bu Dinda" class="w-12 h-12 rounded-full mr-4">
+                        <img src="https://placehold.co/48x48/FFD1DC/4A4A4A?text=AD&font=Poppins" alt="Bu Dinda" class="w-12 h-12 rounded-full mr-4">
                         <div>
-                            <p class="font-medium">Bu Dinda</p>
-                            <p class="text-gray-600 text-sm">Ibu 2 Anak</p>
+                            <p class="font-medium text-pink-stunt">Arya D.</p>
+                            <p class="text-gray-500 text-sm">Ibu 2 Anak</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 italic">
-                        "Sejak pakai StuntCare, saya lebih tenang karena bisa pantau kebutuhan gizi anak setiap hari."
-                    </p>
+                    <p class="text-gray-700 italic text-sm">"Sejak pakai StuntCare, saya lebih tenang karena bisa pantau kebutuhan gizi anak setiap hari. Aplikasinya mudah digunakan!"</p>
                 </div>
-                
-                <!-- Testimonial 2 -->
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
                     <div class="flex items-center mb-4">
-                        <img src="{{ asset('images/budinda.png') }}" alt="Bu Dinda" class="w-12 h-12 rounded-full mr-4">
+                        <img src="https://placehold.co/48x48/FFD1DC/4A4A4A?text=BS&font=Poppins" alt="Pak Budi" class="w-12 h-12 rounded-full mr-4">
                         <div>
-                            <p class="font-medium">Bu Dinda</p>
-                            <p class="text-gray-600 text-sm">Ibu 2 Anak</p>
+                            <p class="font-medium text-pink-stunt">Budi S.</p>
+                            <p class="text-gray-500 text-sm">Ayah 1 Anak</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 italic">
-                        "Sejak pakai StuntCare, saya lebih tenang karena bisa pantau kebutuhan gizi anak setiap hari."
-                    </p>
+                    <p class="text-gray-700 italic text-sm">"Artikel edukasinya sangat membantu saya memahami lebih dalam tentang stunting. Fitur pengingat juga top!"</p>
                 </div>
-                
-                <!-- Testimonial 3 -->
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
                     <div class="flex items-center mb-4">
-                        <img src="{{ asset('images/budinda.png') }}" alt="Bu Dinda" class="w-12 h-12 rounded-full mr-4">
+                        <img src="https://placehold.co/48x48/FFD1DC/4A4A4A?text=CD&font=Poppins" alt="Bu Citra" class="w-12 h-12 rounded-full mr-4">
                         <div>
-                            <p class="font-medium">Bu Dinda</p>
-                            <p class="text-gray-600 text-sm">Ibu 2 Anak</p>
+                            <p class="font-medium text-pink-stunt">Citra D.</p>
+                            <p class="text-gray-500 text-sm">Ibu Baru</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 italic">
-                        "Sejak pakai StuntCare, saya lebih tenang karena bisa pantau kebutuhan gizi anak setiap hari."
-                    </p>
+                    <p class="text-gray-700 italic text-sm">"Konsultasi dengan dokter via StuntCare praktis banget. Nggak perlu repot keluar rumah. Recommended!"</p>
                 </div>
             </div>
         </div>
     </section>
     
-    <!-- Feedback Section -->
-    <section class="py-16 bg-pink-50">
+    <section id="feedback" class="py-16 bg-pink-50 overflow-hidden">
         <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row">
-                <div class="md:w-1/2 mb-8 md:mb-0">
+            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                <div class="md:w-1/2 mb-8 md:mb-0 animate-slide-in-left">
                     <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt mb-4">Berikan Umpan Balik</h2>
-                    <p class="text-lg text-pink-stunt font-medium mb-6">Umpan Balikmu Sangat Berarti Untuk Perkembangan Aplikasi StuntCare</p>
-                    
-                    <div class="relative mt-12">
-                        <img src="{{ asset('images/dokterpesan.png') }}" alt="Dokter StuntCare" class="w-3/4 mx-auto">
-                        <div class="absolute inset-0 bg-pink-200 rounded-full -z-10 transform translate-y-8 scale-90"></div>
+                    <p class="text-lg text-pink-dark font-medium mb-6">Umpan Balikmu Sangat Berarti Untuk Perkembangan Aplikasi StuntCare!</p>
+                    <div class="relative mt-8 sm:mt-12">
+                        <img src="{{asset('images/dokterpesan.png')}}" alt="Dokter StuntCare menerima pesan" class="w-3/4 sm:w-2/3 mx-auto rounded-lg animate-subtle-bob">
+                        <div class="absolute inset-0 bg-pink-200/70 rounded-full -z-10 transform translate-y-8 scale-95 blur-xl"></div>
                     </div>
                 </div>
-                
-                <div class="md:w-1/2 md:pl-12">
-                    <p class="text-gray-700 mb-6">Punya pertanyaan atau umpan balik? Berikan ke kami</p>
-                    
-                    <form class="space-y-6">
+                <div class="md:w-1/2 md:pl-8 animate-slide-in-right">
+                    <p class="text-gray-700 mb-6">Punya pertanyaan atau umpan balik? Sampaikan kepada kami!</p>
+                    <form action="#" method="POST" class="space-y-6 bg-white p-8 rounded-xl shadow-xl">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                            <input type="text" id="name" name="name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt">
+                            <input type="text" id="name" name="name" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt focus:border-pink-stunt transition-shadow">
                         </div>
-                        
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt">
+                            <input type="email" id="email" name="email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt focus:border-pink-stunt transition-shadow">
                         </div>
-                        
                         <div>
                             <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Judul</label>
-                            <input type="text" id="subject" name="subject" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt">
+                            <input type="text" id="subject" name="subject" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt focus:border-pink-stunt transition-shadow">
                         </div>
-                        
                         <div>
                             <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Pesan</label>
-                            <textarea id="message" name="message" rows="6" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt"></textarea>
+                            <textarea id="message" name="message" rows="5" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-stunt focus:border-pink-stunt transition-shadow"></textarea>
                         </div>
-                        
                         <div class="text-right">
-                            <button type="submit" class="bg-pink-stunt hover:bg-pink-600 text-white font-medium px-8 py-3 rounded-lg transition duration-300">Kirim</button>
+                            <button type="submit" class="bg-pink-stunt hover:bg-pink-dark text-white font-medium px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">Kirim Pesan</button>
                         </div>
                     </form>
                 </div>
@@ -332,155 +330,285 @@
         </div>
     </section>
     
-    <!-- FAQ Section -->
-    <section class="py-16">
+    <section id="faq" class="py-16 animate-fade-in">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Pertanyaan yang sering ditanyakan?</h2>
-            
-            <div class="max-w-3xl mx-auto space-y-4">
-                <!-- FAQ Item 1 -->
-                <div class="bg-pink-500 rounded-xl overflow-hidden">
-                    <button class="flex justify-between items-center w-full text-left text-white px-6 py-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Pertanyaan yang Sering Diajukan</h2>
+            <div class="max-w-3xl mx-auto space-y-4" id="faqAccordion">
+                <div class="max-h-60 bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                    <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
                         <span class="font-medium">Apakah aplikasi StuntCare gratis?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
+                        <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
-                    <div class="hidden bg-white px-6 py-4">
-                        <p class="text-gray-700">Ya, aplikasi StuntCare dapat digunakan secara gratis dengan fitur dasar. Untuk fitur premium, tersedia paket berlangganan dengan berbagai pilihan harga.</p>
+                    <div class="faq-content bg-white">
+                        <p class="text-gray-700 text-sm">Ya, aplikasi StuntCare dapat digunakan secara gratis dengan mengakses semua fitur</p>
                     </div>
                 </div>
-                
-                <!-- FAQ Item 2 -->
-                <div class="bg-pink-500 rounded-xl overflow-hidden">
-                    <button class="flex justify-between items-center w-full text-left text-white px-6 py-4">
+                <div class="bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                    <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
                         <span class="font-medium">Apakah data anak saya aman di aplikasi ini?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
+                        <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
-                    <div class="hidden bg-white px-6 py-4">
-                        <p class="text-gray-700">Keamanan data anak Anda adalah prioritas utama kami. Semua data dienkripsi dan disimpan dengan aman sesuai standar keamanan internasional.</p>
+                    <div class="faq-content bg-white">
+                        <p class="text-gray-700 text-sm">Keamanan data anak Anda adalah prioritas utama kami. Semua data dienkripsi dan disimpan dengan aman menggunakan standar keamanan internasional terkini.</p>
                     </div>
                 </div>
-                
-                <!-- FAQ Item 3 -->
-                <div class="bg-pink-500 rounded-xl overflow-hidden">
-                    <button class="flex justify-between items-center w-full text-left text-white px-6 py-4">
+
+
+                <div class="bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                    <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
                         <span class="font-medium">Bagaimana cara saya berkonsultasi dengan dokter?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
+                        <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
-                    <div class="hidden bg-white px-6 py-4">
-                        <p class="text-gray-700">Anda dapat berkonsultasi dengan dokter anak berpengalaman melalui fitur chat WhatsApp yang terintegrasi. Cukup klik tombol "Konsultasi Dokter" pada aplikasi.</p>
+                    <div class="faq-content bg-white">
+                        <p class="text-gray-700 text-sm">Anda dapat berkonsultasi dengan dokter anak berpengalaman melalui fitur chat WhatsApp yang terintegrasi. Cukup klik tombol "Konsultasi Dokter" pada aplikasi dan ikuti petunjuknya.</p>
                     </div>
                 </div>
-                
-                <!-- FAQ Item 4 -->
-                <div class="bg-pink-500 rounded-xl overflow-hidden">
-                    <button class="flex justify-between items-center w-full text-left text-white px-6 py-4">
-                        <span class="font-medium">Apakah data anak saya aman di aplikasi ini?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
+                 <div class="bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                    <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
+                        <span class="font-medium">Bisakah saya melacak gizi lebih dari satu anak?</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
-                    <div class="hidden bg-white px-6 py-4">
-                        <p class="text-gray-700">Keamanan data anak Anda adalah prioritas utama kami. Semua data dienkripsi dan disimpan dengan aman sesuai standar keamanan internasional.</p>
-                    </div>
-                </div>
-                
-                <!-- FAQ Item 5 -->
-                <div class="bg-pink-500 rounded-xl overflow-hidden">
-                    <button class="flex justify-between items-center w-full text-left text-white px-6 py-4">
-                        <span class="font-medium">Bagaimana cara saya berkonsultasi dengan dokter?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <div class="hidden bg-white px-6 py-4">
-                        <p class="text-gray-700">Anda dapat berkonsultasi dengan dokter anak berpengalaman melalui fitur chat WhatsApp yang terintegrasi. Cukup klik tombol "Konsultasi Dokter" pada aplikasi.</p>
+                    <div class="faq-content bg-white">
+                        <p class="text-gray-700 text-sm">Tentu saja! StuntCare dirancang untuk mendukung pemantauan gizi untuk beberapa anak dalam satu akun, memudahkan Anda mengelola kesehatan seluruh buah hati.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-pink-500 text-white py-12">
+    <footer class="bg-pink-dark text-white py-12">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <div>
-                    <a href="#" class="flex items-center mb-4">
+                    <a href="#hero" class="flex items-center mb-4">
                         <div class="text-white mr-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                                <circle cx="16" cy="6.5" r="1.5" fill="white"/>
-                            </svg>
+                                <circle cx="16" cy="6.5" r="2" fill="#FFD1DC"/> </svg>
                         </div>
-                        <span class="text-white font-bold text-lg">StuntCare</span>
+                        <span class="text-white font-bold text-xl">StuntCare</span>
                     </a>
-                    <p class="text-white text-sm opacity-80">
-                        Solusi Kami!
+                    <p class="text-pink-light text-sm opacity-90 leading-relaxed">
+                        Partner terpercaya Anda dalam memantau gizi dan mencegah stunting pada anak.
                     </p>
-                    <div class="flex space-x-3 mt-4">
-                        <a href="#" class="bg-white text-pink-500 p-2 rounded-full hover:bg-pink-100 transition duration-300">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="bg-white text-pink-500 p-2 rounded-full hover:bg-pink-100 transition duration-300">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="bg-white text-pink-500 p-2 rounded-full hover:bg-pink-100 transition duration-300">
-                            <i class="fab fa-twitter"></i>
-                        </a>
+                    <div class="flex space-x-3 mt-6">
+                        <a href="#" class="bg-white text-pink-dark p-2 rounded-full hover:bg-pink-light hover:text-pink-stunt transition-all duration-300 transform hover:scale-110"><i class="fab fa-facebook-f fa-fw"></i></a>
+                        <a href="#" class="bg-white text-pink-dark p-2 rounded-full hover:bg-pink-light hover:text-pink-stunt transition-all duration-300 transform hover:scale-110"><i class="fab fa-instagram fa-fw"></i></a>
+                        <a href="#" class="bg-white text-pink-dark p-2 rounded-full hover:bg-pink-light hover:text-pink-stunt transition-all duration-300 transform hover:scale-110"><i class="fab fa-twitter fa-fw"></i></a>
+                        <a href="#" class="bg-white text-pink-dark p-2 rounded-full hover:bg-pink-light hover:text-pink-stunt transition-all duration-300 transform hover:scale-110"><i class="fab fa-youtube fa-fw"></i></a>
                     </div>
                 </div>
-                <div class="md:col-span-3 md:flex justify-between">
+                <div class="md:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-8">
                     <div>
-                        <h4 class="text-white font-semibold mb-4">Home</h4>
+                        <h4 class="text-white font-semibold mb-4 text-lg">Navigasi</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#hero" class="text-pink-light hover:text-white hover:underline transition-colors">Home</a></li>
+                            <li><a href="#about" class="text-pink-light hover:text-white hover:underline transition-colors">Tentang Kami</a></li>
+                            <li><a href="#features" class="text-pink-light hover:text-white hover:underline transition-colors">Fitur</a></li>
+                            <li><a href="#testimonials" class="text-pink-light hover:text-white hover:underline transition-colors">Testimoni</a></li>
+                        </ul>
                     </div>
                     <div>
-                        <h4 class="text-white font-semibold mb-4">About</h4>
+                        <h4 class="text-white font-semibold mb-4 text-lg">Dukungan</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#faq" class="text-pink-light hover:text-white hover:underline transition-colors">FAQ</a></li>
+                            <li><a href="#feedback" class="text-pink-light hover:text-white hover:underline transition-colors">Kontak Kami</a></li>
+                            <li><a href="#" class="text-pink-light hover:text-white hover:underline transition-colors">Kebijakan Privasi</a></li>
+                            <li><a href="#" class="text-pink-light hover:text-white hover:underline transition-colors">Syarat & Ketentuan</a></li>
+                        </ul>
                     </div>
                     <div>
-                        <h4 class="text-white font-semibold mb-4">Features</h4>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-semibold mb-4">Contact</h4>
+                        <h4 class="text-white font-semibold mb-4 text-lg">Alamat Kantor</h4>
+                        <p class="text-pink-light text-sm leading-relaxed">Jl. Kesehatan Anak No. 123<br>Jakarta Sehat, Indonesia 12345<br>Email: support@stuntcare.id</p>
                     </div>
                 </div>
             </div>
-            
-            <div class="text-center border-t border-pink-400 pt-8">
-                <p class="text-sm opacity-80">
-                    &copy; StuntCare. All rights reserved.
+            <div class="text-center border-t border-pink-stunt/50 pt-8 mt-8">
+                <p class="text-sm text-pink-light opacity-90">
+                    &copy; <span id="currentYear"></span> StuntCare. All rights reserved. Dibuat dengan <i class="fas fa-heart text-pink-stunt"></i> untuk generasi Indonesia sehat.
                 </p>
             </div>
         </div>
     </footer>
 
-    <!-- Accordion Script for FAQ -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const accordionButtons = document.querySelectorAll('.bg-pink-500 button');
+            const texts = [
+                'Pantau tumbuh kembang anak dengan mudah',
+                'Konsultasi dengan dokter kapan saja',
+                'Jaga gizi harian untuk masa depan yang cerah',
+                'StuntCare mendorong anak Indonesia sehat',
+            ];
             
-            accordionButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const content = button.nextElementSibling;
-                    
-                    // Toggle current item
-                    content.classList.toggle('hidden');
-                    
-                    // Change icon
-                    const icon = button.querySelector('svg');
-                    if (content.classList.contains('hidden')) {
-                        icon.innerHTML = '<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />';
-                    } else {
-                        icon.innerHTML = '<path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />';
-                    }
-                });
-            });
+            let textIndex = 0;
+            let charIndex = 0;
+            const typingElement = document.getElementById('typing');
+            const typingSpeed = 100;
+            const erasingSpeed = 50;
+            const delayBetweenTexts = 2000;
+            
+            function type() {
+                if (charIndex < texts[textIndex].length) {
+                    typingElement.textContent += texts[textIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(type, typingSpeed);
+                } else {
+                    setTimeout(erase, delayBetweenTexts);
+                }
+            }
+            
+            function erase() {
+                if (charIndex > 0) {
+                    typingElement.textContent = texts[textIndex].substring(0, charIndex - 1);
+                    charIndex--;
+                    setTimeout(erase, erasingSpeed);
+                } else {
+                    textIndex = (textIndex + 1) % texts.length;
+                    setTimeout(type, typingSpeed);
+                }
+            }
+            
+            // Start typing animation
+            setTimeout(type, 1000);
         });
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Accordion Script for FAQ
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqAccordion = document.getElementById('faqAccordion');
+            if (faqAccordion) {
+                const accordionButtons = faqAccordion.querySelectorAll('.faq-button');
+                const downArrowSVG = '<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />';
+                const upArrowSVG = '<path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />';
+
+                accordionButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const content = button.nextElementSibling;
+                        const icon = button.querySelector('svg');
+                        const isOpen = content.classList.contains('open');
+
+                        // Optional: Close other open items
+                        // accordionButtons.forEach(otherButton => {
+                        //     if (otherButton !== button) {
+                        //         const otherContent = otherButton.nextElementSibling;
+                        //         const otherIcon = otherButton.querySelector('svg');
+                        //         if (otherContent.classList.contains('open')) {
+                        //             otherContent.classList.remove('open');
+                        //             otherContent.style.maxHeight = null;
+                        //             otherIcon.innerHTML = downArrowSVG;
+                        //             otherIcon.classList.remove('rotate-180');
+                        //         }
+                        //     }
+                        // });
+                        
+                        if (isOpen) {
+                            content.classList.remove('open');
+                            content.style.maxHeight = null; 
+                            icon.innerHTML = downArrowSVG;
+                            icon.classList.remove('rotate-180');
+                        } else {
+                            content.classList.add('open');
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            icon.innerHTML = upArrowSVG; // Or simply rotate
+                            icon.classList.add('rotate-180');
+                        }
+                    });
+                });
+            }
+        });
+
+        // Three.js Animation for Hero Section
+        function initThreeJSAnimation() {
+            const container = document.getElementById('threejs-hero-container');
+            if (!container) return;
+
+            let scene, camera, renderer, objects = [];
+
+            // Scene
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); // alpha for transparent background
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Soft white light
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xFFD1DC, 1, 100); // Pinkish light
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            // Geometry and Materials
+            const geometries = [
+                new THREE.IcosahedronGeometry(0.8, 0), // Crystal-like
+                new THREE.TorusKnotGeometry(0.6, 0.15, 100, 16), // Abstract knot
+                new THREE.SphereGeometry(0.5, 16, 16) // Simple sphere
+            ];
+            const materials = [
+                new THREE.MeshStandardMaterial({ color: 0xFF69B4, roughness: 0.3, metalness: 0.4 }), // pink-stunt
+                new THREE.MeshStandardMaterial({ color: 0xFFD1DC, roughness: 0.5, metalness: 0.2 }), // pink-light
+                new THREE.MeshPhongMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.7, shininess: 80 }) // semi-transparent white
+            ];
+
+            // Create and position objects
+            for (let i = 0; i < 5; i++) { // Create a few objects
+                const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+                const material = materials[Math.floor(Math.random() * materials.length)];
+                const object = new THREE.Mesh(geometry, material);
+
+                object.position.x = (Math.random() - 0.5) * 8;
+                object.position.y = (Math.random() - 0.5) * 6;
+                object.position.z = (Math.random() - 0.5) * 2 -1; // Slightly in front or behind camera plane
+
+                object.rotation.x = Math.random() * 2 * Math.PI;
+                object.rotation.y = Math.random() * 2 * Math.PI;
+
+                // Store random rotation speeds
+                object.userData.rotationSpeedX = (Math.random() - 0.5) * 0.005;
+                object.userData.rotationSpeedY = (Math.random() - 0.5) * 0.005;
+                
+                scene.add(object);
+                objects.push(object);
+            }
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+
+                objects.forEach(object => {
+                    object.rotation.x += object.userData.rotationSpeedX;
+                    object.rotation.y += object.userData.rotationSpeedY;
+                });
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (container.clientWidth > 0 && container.clientHeight > 0) {
+                    camera.aspect = container.clientWidth / container.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                }
+            });
+        }
+        
+        // Initialize Three.js animation when the DOM is ready
+        if (typeof THREE !== 'undefined') {
+            document.addEventListener('DOMContentLoaded', initThreeJSAnimation);
+        } else {
+            console.warn('Three.js library not loaded. 3D animation will not run.');
+        }
+
     </script>
 </body>
 </html>
