@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DailyIntakaesResource\Pages;
-use App\Filament\Resources\DailyIntakaesResource\RelationManagers;
-use App\Models\DailyIntakaes;
+use App\Filament\Resources\ProfileResource\Pages;
+use App\Filament\Resources\ProfileResource\RelationManagers;
+use App\Models\Profile;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class DailyIntakaesResource extends Resource
+class ProfileResource extends Resource
 {
-    protected static ?string $model = DailyIntakaes::class;
+    protected static ?string $model = Profile::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -56,9 +56,9 @@ class DailyIntakaesResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDailyIntakaes::route('/'),
-            'create' => Pages\CreateDailyIntakaes::route('/create'),
-            'edit' => Pages\EditDailyIntakaes::route('/{record}/edit'),
+            'index' => Pages\ListProfiles::route('/'),
+            'create' => Pages\CreateProfile::route('/create'),
+            'edit' => Pages\EditProfile::route('/{record}/edit'),
         ];
     }
 }

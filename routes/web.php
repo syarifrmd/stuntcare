@@ -1,13 +1,16 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ArtikelController;
-use App\Http\Controllers\DailyIntakeController;
-use App\Http\Controllers\PemantauanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChildrenController;
+use App\Http\Controllers\PemantauanController;
+use App\Http\Controllers\DailyIntakeController;
+use App\Http\Controllers\LihatProfilController;
+use App\Http\Controllers\HistoriController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KonsultasiDokterController;
 
 // Halaman Welcome (public)
@@ -51,6 +54,7 @@ Route::resource('artikel', ArtikelController::class);
 Route::resource('food', FoodController::class);
 Route::resource('pemantauan', PemantauanController::class);
 Route::resource('children', ChildrenController::class);
+Route::resource('histori', HistoriController::class);
 
 // Daily intake tambahan
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');

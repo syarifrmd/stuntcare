@@ -9,10 +9,13 @@ use Illuminate\Support\Facades\Auth;
 class ChildrenController extends Controller
 {
     // Menampilkan halaman untuk menambah data anak
-    public function create()
+    public function create  ()
     {
-        return view('children.create');
+          $children = Children::where('user_id', Auth::id())->get(); 
+    return view('children.create', compact('children'));
     }
+
+    
 
     // Menyimpan data anak ke database
     public function store(Request $request)
@@ -33,6 +36,35 @@ class ChildrenController extends Controller
         $child->save();
 
         // Redirect ke halaman pemantauan
-        return redirect()->route('pemantauan.index')->with('success', 'Data anak berhasil ditambahkan.');
+        return redirect()->route('children.create')->with('success', 'Data anak berhasil ditambahkan.');
+    }
+
+        public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'gender' => 'required|in:L,P',
+           
+        ]);
+
+        $child = Children::where('id', $id)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        $child->update($request->all());
+
+        return redirect()->route('children.create')->with('success', 'Data anak berhasil diperbarui!');
+    }
+
+        public function destroy($id)
+    {
+        $child = Children::where('id', $id)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        $child->delete();
+
+        return redirect()->route('children.create')->with('success', 'Data anak berhasil dihapus!');
     }
 }

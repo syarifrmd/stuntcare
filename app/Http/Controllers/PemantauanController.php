@@ -6,7 +6,7 @@ use App\Models\Children;
 use App\Models\DailyIntake;
 use App\Models\DailyNutritionSummaries;
 use App\Models\Food;
-use App\Models\NutritionNeedByAge;
+use App\Models\NutritionNeedsByAge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
@@ -46,6 +46,9 @@ class PemantauanController extends Controller
 
         return view('pemantauan.index', compact('child', 'intakes', 'summary', 'foods'));
     }
+
+    
+
     // Menghitung gizi harian dan menyimpannya
     public function hitungGiziHarian($childId, $date = null)
     {
@@ -57,7 +60,7 @@ class PemantauanController extends Controller
         $umur = $birthDate->diffInYears(now()); // Hitung umur anak
 
         // Ambil data kebutuhan gizi per umur
-        $kebutuhan = NutritionNeedByAge::all()->first(function ($item) use ($umur) {
+        $kebutuhan = NutritionNeedsByAge::all()->first(function ($item) use ($umur) {
             [$min, $max] = array_map('trim', explode('-', str_replace(['tahun', ' '], '', $item->age_range)));
             return $umur >= (int)$min && $umur <= (int)$max;
         });

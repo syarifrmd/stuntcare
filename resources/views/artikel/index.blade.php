@@ -66,6 +66,7 @@
           <!-- Body -->
           <div class="p-6 space-y-4 text-gray-800">
               <p class="font-medium">Topik: {{ $selectedArtikel->topic }}</p>
+              <p class="font-medium">Penulis: {{ $selectedArtikel->author->name }}</p>
             <div class="prose max-w-none">
               {!! $selectedArtikel->content !!}
             </div>
