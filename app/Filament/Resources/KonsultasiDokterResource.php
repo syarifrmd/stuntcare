@@ -4,13 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\KonsultasiDokterResource\Pages;
 use App\Models\KonsultasiDokter;
-use App\Models\User;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
-// ✅ Import komponen Forms
+// Forms
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -19,8 +17,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 
-// ✅ Import komponen Tables
-use Filament\Tables;
+// Tables
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -36,79 +33,66 @@ class KonsultasiDokterResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Card::make([
-                    TextInput::make('nama_pasien')
-                        ->label('Nama Pasien')
-                        ->required(),
+        return $form->schema([
+            Card::make([
+                TextInput::make('nama_dokter')
+                    ->label('Nama Dokter')
+                    ->required(),
 
-                    Select::make('nama_dokter')
-                        ->label('Pilih Dokter')
-                        ->options(fn () => User::where('role', 'dokter')->pluck('name', 'name'))
-                        ->searchable()
-                        ->required()
-                        ->live()
-                        ->afterStateUpdated(function (string $state, Set $set) {
-                            $dokter = User::where('name', $state)->first();
-                            if ($dokter) {
-                                $set('no_wa_dokter', $dokter->phone);
-                                $set('whatsapp_log', 'https://wa.me/' . ltrim($dokter->phone, '0'));
-                            }
-                        }),
+                TextInput::make('no_wa_dokter')
+                    ->label('Nomor WhatsApp Dokter')
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function (?string $state, Set $set) {
+                        if ($state) {
+                            $set('whatsapp_log', 'https://wa.me/' . preg_replace('/^0/', '62', $state));
+                        } else {
+                            $set('whatsapp_log', null);
+                        }
+                    }),
 
-                    TextInput::make('no_wa_dokter')
-                        ->label('Nomor WhatsApp Dokter')
-                        ->required()
-                        ->disabled(),
+                TextInput::make('whatsapp_log')
+                    ->label('Link WhatsApp')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Akan diisi otomatis dari nomor WA'),
 
-                    TextInput::make('whatsapp_log')
-                        ->label('Link WhatsApp')
-                        ->url()
-                        ->nullable()
-                        ->disabled(),
+                DateTimePicker::make('waktu_konsultasi')
+                    ->label('Waktu Konsultasi')
+                    ->default(now())
+                    ->required(),
 
-                    DateTimePicker::make('waktu_konsultasi')
-                        ->label('Waktu Konsultasi')
-                        ->default(now())
-                        ->required(),
+                Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'terbuka' => 'Terbuka',
+                        'selesai' => 'Selesai',
+                        'ditutup' => 'Ditutup',
+                    ])
+                    ->default('terbuka')
+                    ->required(),
 
-                    Select::make('status')
-                        ->label('Status')
-                        ->required()
-                        ->options([
-                            'terbuka' => 'Terbuka',
-                            '
-                            selesai' => 'Selesai',
-                            'ditutup' => 'Ditutup',
-                        ])
-                        ->default('terbuka'),
+                Textarea::make('catatan_user')
+                    ->label('Catatan User')
+                    ->rows(3)
+                    ->nullable(),
 
-                    Textarea::make('catatan_user')
-                        ->label('Catatan User')
-                        ->rows(3)
-                        ->nullable(),
-
-                    Textarea::make('catatan_dokter')
-                        ->label('Catatan Dokter')
-                        ->rows(3)
-                        ->nullable(),
-                ]),
-            ]);
+                Textarea::make('catatan_dokter')
+                    ->label('Catatan Dokter')
+                    ->rows(3)
+                    ->nullable(),
+            ]),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('nama_pasien')->searchable()->sortable(),
-                TextColumn::make('nama_dokter')->sortable(),
-                TextColumn::make('no_wa_dokter')->label('WA Dokter')->limit(20),
+                TextColumn::make('nama_dokter')->label('Nama Dokter')->sortable()->searchable(),
+                TextColumn::make('no_wa_dokter')->label('No. WA Dokter')->limit(20),
                 TextColumn::make('status')->badge(),
                 TextColumn::make('waktu_konsultasi')->label('Waktu')->dateTime('d M Y H:i'),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
                 EditAction::make(),
