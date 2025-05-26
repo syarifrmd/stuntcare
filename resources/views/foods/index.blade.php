@@ -28,7 +28,8 @@
     </button>
 
     <!-- Filter dan Search -->
-    <form method="GET" action="{{ route('food.index') }}" class="flex flex-col md:flex-row gap-4 w-full">
+    <form method="GET" action="{{ route('food.index', ['child_id' => $child->id]) }}" class="flex flex-col md:flex-row gap-4 w-full">
+        <input type="hidden" name="child_id" value="{{ $child->id }}">
         <input type="text" name="search" value="{{ request('search') }}"
             placeholder="Cari nama makanan..."
             class="border border-pink-400 bg-pink-50 rounded-full px-4 py-2 text-pink-600 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
@@ -53,6 +54,7 @@
             <form action="{{ route('food.store') }}" method="POST" class="space-y-3">
                 @csrf
                 <input type="hidden" name="created_by" value="{{ Auth::id() }}">
+                <input type="hidden" name="child_id" value="{{ $child->id }}">
                 <input type="text" name="name" placeholder="Nama Makanan"
                     class="w-full border rounded px-3 py-2" required>
                 <select name="category" class="w-full border rounded px-3 py-2" required>

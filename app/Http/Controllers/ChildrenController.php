@@ -38,4 +38,33 @@ class ChildrenController extends Controller
         // Redirect ke halaman pemantauan
         return redirect()->route('children.create')->with('success', 'Data anak berhasil ditambahkan.');
     }
+
+        public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'gender' => 'required|in:L,P',
+           
+        ]);
+
+        $child = Children::where('id', $id)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        $child->update($request->all());
+
+        return redirect()->route('children.create')->with('success', 'Data anak berhasil diperbarui!');
+    }
+
+        public function destroy($id)
+    {
+        $child = Children::where('id', $id)
+                        ->where('user_id', Auth::id())
+                        ->firstOrFail();
+
+        $child->delete();
+
+        return redirect()->route('children.create')->with('success', 'Data anak berhasil dihapus!');
+    }
 }
