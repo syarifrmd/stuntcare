@@ -34,7 +34,7 @@
                     </svg>
                         Artikel
                 </a>
-                <a href="{{ route('children.create') }}" class="flex items-center px-4 py-2 text-sm font-medium text-pink-500 bg-pink-50 border border-pink-300 rounded-full hover:bg-pink-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50 transition">
+                <a href="{{ route('children.create') }}" class="flex items-center px-4 py-2 text-sm font-medium text-pink-500 bg-pink-50 border border-pink-300 rounded-full hover:bg-pink-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                      </svg>
@@ -58,7 +58,13 @@
                 <!-- User Dropdown (Desktop) -->
                 <div x-data="{ open: false }" class="relative ml-4">
                     <button @click="open = !open" class="flex items-center focus:outline-none">
-                        <img class="h-8 w-8 rounded-full border-2 border-pink-100" src="https://avatar.iran.liara.run/username?username={{ Auth::user()->name }}" alt="User Avatar">
+                        <div class="h-8 w-8 rounded-full overflow-hidden border-2 border-pink-100">
+                                     @if(Auth::user()->fotoprofil)
+                                        <img src="{{ asset('storage/fotoprofil/' . Auth::user()->fotoprofil) }}" alt="Foto Profil" class="w-full h-full object-cover">
+                                    @else
+                                        <img src="https://avatar.iran.liara.run/username?username={{ Auth::user()->name }}" alt="Default Avatar" class="w-full h-full object-cover">
+                                    @endif
+                        </div>
                         <div class="ml-2 hidden md:block text-left">
                             <p class="text-xs font-semibold text-gray-800">{{ Auth::user()->name }}</p>
                             <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
@@ -76,7 +82,6 @@
                         class="absolute right-0 mt-2 w-48 bg-white border border-pink-100 rounded-md shadow-lg z-50"
                     >
                         <a href="{{ route('lihatprofile.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">Edit Profil</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">Pengaturan</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
@@ -103,19 +108,19 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <a href="#" class="flex items-center px-4 py-2 text-base font-medium text-pink-500 bg-pink-50 border-l-4 border-pink-500">
+            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500 hover:border-l-4 hover:border-pink-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
                 Home
             </a>
-            <a href="#" class="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500 hover:border-l-4 hover:border-pink-500">
+            <a href="{{ route('artikel.index') }}" class="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500 hover:border-l-4 hover:border-pink-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                 </svg>
                 Artikel
             </a>
-            <a href="#" class="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500 hover:border-l-4 hover:border-pink-500">
+            <a href="{{ route('children.create') }}" class="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500 hover:border-l-4 hover:border-pink-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
@@ -132,8 +137,12 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-pink-100">
             <div class="flex items-center px-4">
-                <div class="flex-shrink-0">
-                    <img class="h-10 w-10 rounded-full border-2 border-pink-100" src="/api/placeholder/40/40" alt="User Avatar">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+                     @if(Auth::user()->fotoprofil)
+                        <img src="{{ asset('storage/fotoprofil/' . Auth::user()->fotoprofil) }}" alt="Foto Profil" class="w-full h-full object-cover">
+                     @else
+                        <img src="https://avatar.iran.liara.run/username?username={{ Auth::user()->name }}" alt="Default Avatar" class="w-full h-full object-cover">
+                      @endif
                 </div>
                 <div class="ml-3">
                     <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
@@ -142,11 +151,8 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <a href="#" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500">
+                <a href="{{ route('lihatprofile.index') }}" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500">
                     Profile
-                </a>
-                <a href="#" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500">
-                    Settings
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
