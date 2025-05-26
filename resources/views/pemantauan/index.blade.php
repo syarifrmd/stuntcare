@@ -132,11 +132,14 @@
         </div>
       @endif
 
-      <!-- Tombol Tambah Makanan -->
-      <div class="flex justify-center mt-10">
-        <a href="{{ route('food.index') }}" class="px-6 py-2 bg-pink-500 text-white rounded">Tambah Makanan Lainnya</a>
-      </div>
+    <!-- Tombol Tambah Makanan -->
+    <div class="flex justify-center mt-10">
+      <a href="{{ route('food.index', ['child_id' => $child->id]) }}" class="px-6 py-2 bg-pink-500 text-white rounded">Tambah Makanan Lainnya</a>
     </div>
-  </x-app-layout>
+</div>
+
+
+
+</x-app-layout>
 </body>
 </html>

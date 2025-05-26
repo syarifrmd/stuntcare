@@ -15,7 +15,7 @@
 <body class="bg-white">
     <div class="bg-white">
                 <x-app-layout>
-    <span name="header"></span>
+    <span name="header"></span>+
     <div class="bg-white">
         
     </div>
@@ -94,16 +94,16 @@
                     <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-sm"> Tidak ada gambar </div>
                      @endif 
                 </div>
-            <p class="text-sm text-gray-700">Kategori: {{ $food->category }}</p>
-            <p class="text-sm text-gray-700">Energi: {{ $food->energy }} kkal</p>
-            <p class="text-sm text-gray-700">Protein: {{ $food->protein }} g</p>
-            <p class="text-sm text-gray-700">Lemak: {{ $food->fat }} g</p>
-            <p class="text-sm text-gray-700 mb-2">Karbohidrat: {{ $food->carbohydrate }} g</p>
+                    <p class="text-sm text-gray-700">Kategori: {{ $food->category }}</p>
+                    <p class="text-sm text-gray-700">Energi: {{ $food->energy }} kkal</p>
+                    <p class="text-sm text-gray-700">Protein: {{ $food->protein }} g</p>
+                    <p class="text-sm text-gray-700">Lemak: {{ $food->fat }} g</p>
+                    <p class="text-sm text-gray-700 mb-2">Karbohidrat: {{ $food->carbohydrate }} g</p>
             
             <form action="{{ route('intakes.storeDirect') }}" method="POST" class="mt-2">
                 @csrf
                 <input type="hidden" name="food_id" value="{{ $food->id }}">
-                <input type="hidden" name="child_id" value="{{ $child->id ?? '' }}">
+                <input type="hidden" name="child_id" value="{{ $child->id}}">
                 <select name="time_of_day" class="border px-2 py-1 rounded text-sm w-full mb-2">
                     <option value="Pagi">Pagi</option>
                     <option value="Siang">Siang</option>

@@ -12,28 +12,29 @@ class FoodController extends Controller
     // Menampilkan semua data makanan, dengan filter kategori opsional, pencarian
     public function index(Request $request)
     {
-        $child = Children::where('user_id', Auth::id())->first();
+        // Ambil child_id dari query string
+    $child_id = $request->child_id;
 
-        $query = Food::query();
+    // Cari data anak berdasarkan ID dan user yang sedang login
+    $child = Children::where('id', $child_id)
+                     ->where('user_id', Auth::id())
+                     ->firstOrFail(); // lebih aman, akan error 404 jika anak tidak ditemukan
 
-        //filter kategori
-        if ($request->has('category') && $request->category != '') {
-            $query->where('category', $request->category);
-        }
+    $query = Food::query();
 
-        // Filter pencarian nama
-        if ($request->has('search') && $request->search != '') {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
+    // Filter kategori
+    if ($request->has('category') && $request->category != '') {
+        $query->where('category', $request->category);
+    }
 
-        if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('foods', 'public');
-            $data['foto'] = $path;
-        }
+    // Filter pencarian nama
+    if ($request->has('search') && $request->search != '') {
+        $query->where('name', 'like', '%' . $request->search . '%');
+    }
 
-        $foods = $query->get();
+    $foods = $query->get();
 
-        return view('foods.index', compact('foods', 'child'));
+    return view('foods.index', compact('foods', 'child'));
     }
 
     // Menampilkan form tambah data
@@ -56,6 +57,7 @@ class FoodController extends Controller
 
         Food::create($request->all());
 
-        return redirect()->route('food.index')->with('success', 'Data berhasil disimpan!');
+            return redirect()->route('food.index', ['child_id' => $request->child_id])
+                 ->with('success', 'Data berhasil disimpan!');
     }
 }

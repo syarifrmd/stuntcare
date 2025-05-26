@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ArtikelController;
-use App\Http\Controllers\DailyIntakeController;
-use App\Http\Controllers\PemantauanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChildrenController;
+use App\Http\Controllers\PemantauanController;
+use App\Http\Controllers\DailyIntakeController;
+use App\Http\Controllers\LihatProfilController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\HomeController;
 
@@ -56,5 +57,10 @@ Route::resource('children', ChildrenController::class);
 Route::resource('histori', HistoriController::class);
 
 Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
+Route::post('/dailyintakes', [DailyIntakeController::class, 'store'])->name('dailyintakes.store');
+
+
+
+Route::resource('lihatprofile', LihatProfilController::class);
 
 
