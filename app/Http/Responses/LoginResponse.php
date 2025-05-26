@@ -14,6 +14,9 @@ class LoginResponse implements LoginResponseContract
         if ($user->role === 'admin') {
             return redirect()->intended('/admin/dashboard'); // biasanya halaman Filament
         }
+        elseif ($user->role === 'dokter') {
+            return redirect()->intended('/dokter/dashboard');
+        }
 
         return redirect()->intended('/user/dashboard');
     }

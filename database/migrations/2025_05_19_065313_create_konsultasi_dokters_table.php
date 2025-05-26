@@ -17,11 +17,12 @@ return new class extends Migration
 
             $table->string('nama_dokter');
             $table->string('no_wa_dokter');
-            $table->text('whatsapp_log')->nullable();
+            $table->string('fotodokter')->nullable();
             $table->dateTime('waktu_konsultasi')->nullable();
             $table->enum('status', ['terbuka', 'selesai', 'ditutup'])->default('terbuka');
             $table->text('catatan_user')->nullable();
             $table->text('catatan_dokter')->nullable();
+
 
             $table->timestamps();
         });

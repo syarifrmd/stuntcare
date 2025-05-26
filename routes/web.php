@@ -12,7 +12,7 @@ use App\Http\Controllers\LihatProfilController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KonsultasiDokterController;
-
+use App\Http\Controllers\DokterController;
 // Halaman Welcome (public)
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +29,9 @@ Route::get('/redirect', function () {
 
     if ($user->role === 'admin') {
         return redirect()->intended('/admin'); // Default route Filament
+    }
+    elseif ($user->role === 'dokter') {
+        return redirect()->intended('/dokter');
     }
 
     return redirect()->intended('/user/dashboard');
@@ -65,3 +68,4 @@ Route::resource('konsultasi-dokter', KonsultasiDokterController::class)->only([
 ]);
 
 Route::resource('lihatprofile', LihatProfilController::class);
+Route::resource('dokter', DokterController::class);

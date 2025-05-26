@@ -11,14 +11,14 @@
     <div class="container mx-auto px-4 py-6">
         <h1 class="text-3xl font-bold text-pink-600 mb-6">Daftar Konsultasi Dokter</h1>
 
-        @if ($konsultasis->isEmpty())
+        @if ($konsultasi->isEmpty())
             <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-sm">
                 <p class="font-bold">Belum Ada Konsultasi</p>
                 <p>Data konsultasi dokter belum tersedia.</p>
             </div>
         @else
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($konsultasis as $k)
+                @foreach($konsultasi as $k)
                 <div class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-lg transition">
                     <h2 class="text-lg font-semibold text-gray-800">{{ $k->nama_dokter }}</h2>
 
@@ -42,11 +42,10 @@
             </div>
 
             <div class="mt-8">
-                {{ $konsultasis->links() }}
+                {{ $konsultasi->links() }}
             </div>
         @endif
     </div>
 
 </body>
 </html>
-@endsection

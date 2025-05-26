@@ -8,12 +8,12 @@ class KonsultasiDokterController extends Controller
 {
     public function index()
     {
-        $konsultasis = KonsultasiDokter::latest()->paginate(10);
-        return view('konsultasi.index', compact('konsultasis'));
+        $konsultasi = KonsultasiDokter::latest()->paginate(10);
+        return view('konsultasidokter.index', compact('konsultasi'));
     }
 
     public function show(KonsultasiDokter $konsultasi)
     {
-        return view('konsultasi.show', compact('konsultasi'));
+        return view('konsultasidokter.show', compact('konsultasi'));
     }
 }
