@@ -4,213 +4,269 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StuntCare - Tumbuh Kembang Optimal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Custom CSS untuk animasi ketik dan styling tambahan jika diperlukan */
         .typing {
-            border-right: 2px solid #ec4899;
+            border-right: 2px solid #ec4899; /* Warna pink Tailwind */
             animation: blink 1s infinite;
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.5rem; /* Tailwind: text-2xl */
+            font-weight: 600; /* Tailwind: font-semibold */
         }
         
         @keyframes blink {
             0%, 50% { border-color: transparent; }
-            51%, 100% { border-color: #ec4899; }
+            51%, 100% { border-color: #ec4899; } /* Warna pink Tailwind */
         }
-        .feature-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
+        /* .feature-card styling bisa langsung menggunakan Tailwind utilities di HTML */
     </style>
 </head>
-<body class="">
+<body class="font-['Poppins'] bg-gray-50 text-gray-800">
 <x-app-layout>
     <span name="header"></span>
-    <!-- Main Content -->
     <main class="">
-        <!-- Hero Section -->
-                 <!-- Welcome Section with Typing Animation -->
         <section class="py-16 bg-white">
-            <div class="max-w-4xl mx-auto text-center px-6 bg-white">
+            <div class="max-w-4xl mx-auto text-center px-6">
                 <h2 class="text-4xl font-semibold text-gray-800 mb-6">
                     Selamat datang, <span class="text-pink-500">{{ Auth::user()->name }}</span>
                 </h2>
-                <div class="flex justify-center items-center">
-                    <span class="typing" id="typing">Mari mulai perjalanan sehat bersama StuntCare!</span>
+                <div class="flex justify-center items-center min-h-[3rem]">
+                    <span class="typing" id="typing"></span>
                 </div>
             </div>
         </section>
 
-        <section class="w-full min-h-screen relative bg-white">
-            <div class="max-w-screen-xl mx-auto px-6 py-12">
-                <div class=" rounded-3xl  overflow-hidden min-h-[708px] flex items-center bg-pink-100 ">
+        <section class="w-full relative bg-white pb-12">
+            <div class="max-w-screen-xl mx-auto px-6">
+                <div class="rounded-3xl overflow-hidden min-h-[600px] md:min-h-[708px] flex items-center bg-pink-100 ">
                     <div class="flex flex-wrap w-full">
-                        <!-- Left Content -->
-                        <div class="w-full lg:w-1/2 p-12 flex flex-col justify-center">
-                            <h1 class="text-5xl font-bold text-pink-500 leading-tight mb-8 font-['Poppins']">
+                        <div class="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                            <h1 class="text-4xl md:text-5xl font-bold text-pink-600 leading-tight mb-8">
                                 Tumbuh Kembang Optimal
                             </h1>
-                            <p class="text-xl text-pink-500 mb-8 font-['Poppins']">
-                                Pantau perkembangan anak secara menyeluruh, jaga asupan gizi harian, dan wujudkan generasi sehat dan cerdas sejak dini bersama Stuntcare
+                            <p class="text-lg md:text-xl text-pink-700 mb-8">
+                                Pantau perkembangan anak secara menyeluruh, jaga asupan gizi harian, dan wujudkan generasi sehat dan cerdas sejak dini bersama StuntCare.
                             </p>
                         </div>
-                        <!-- Right Image -->
                         <div class="hidden lg:block lg:w-1/2 relative">
-                            <img class="w-full h-[700px] object-cover relative right-0 top-[-40px] rounded-tl-[90px] rounded-tr-3xl rounded-bl-[200px] rounded-br-3xl"
-                                 src="https://placehold.co/637x747" alt="Ibu dan anak sehat">
+                            <img class="w-full h-auto max-h-[700px] object-cover relative lg:right-0 lg:top-[-40px] rounded-tl-[90px] rounded-tr-3xl rounded-bl-[200px] rounded-br-3xl"
+                                 src="{{asset('images/dokteranak2.png')}}" 
+                                 alt="Ibu dan anak sehat">
                         </div>
                     </div>
                 </div>
 
-                <!-- Quote Section -->
                 <div class="max-w-4xl mx-auto text-center mt-16">
-                    <blockquote class="text-xl text-pink-500 font-normal font-['Poppins'] italic">
-                        "Jangan biarkan stunting menghambat masa depan anak. Stuntcare hadir untuk bantu pantau dan jaga kesehatannya sejak dini."
+                    <blockquote class="text-xl text-pink-600 font-normal italic">
+                        "Jangan biarkan stunting menghambat masa depan anak. StuntCare hadir untuk bantu pantau dan jaga kesehatannya sejak dini."
                     </blockquote>
                 </div>
             </div>
         </section>
 
-         <!-- Articles Carousel Section -->
-        <section class="py-20 bg-gradient-to-b from-white to-pink-100 ">
-            <div class="max-w-6xl mx-auto px-6">
-                <h2 class="text-4xl font-semibold text-pink-500 text-center mb-12 font-['Poppins']">
+        <section class="py-20 bg-gradient-to-b from-white to-pink-50">
+            <div class="max-w-7xl mx-auto px-6">
+                <h2 class="text-4xl font-semibold text-pink-600 text-center mb-12">
                     Artikel Terbaru
                 </h2>
                 
-                <!-- Carousel -->
-                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                    <!-- Indicators -->
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                    </div>
-
-                    <!-- Carousel Items -->
-                    <div class="carousel-inner">
-                        @foreach($articles as $index => $article)
-                        <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                            <div class="bg-pink-50 p-8 rounded-3xl mx-4">
-                                <img src="{{ $article->image_url ?? 'https://placehold.co/800x400' }}" class="w-full h-64 object-cover rounded-2xl mb-6" alt="Article Image">
-                                <h3 class="text-2xl font-semibold text-pink-500 mb-4">{{ $article->title }}</h3>
-                                <p class="text-gray-700 text-lg mb-6">{{ \Illuminate\Support\Str::limit($article->content, 200) }}</p>
-                                <a href="{{ route('artikel.show', $article->id) }}" class="inline-block bg-pink-500 text-white px-6 py-3 rounded-full hover:bg-pink-600 transition-all duration-300">
-                                  Baca Selengkapnya
-                                </a>
-                            </div>
+                @if(isset($articles) && $articles->count() > 0)
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach($articles as $article)
+                    <div class="bg-white border border-pink-200 rounded-3xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+                        <div class="bg-pink-500 py-4 px-6 text-white text-xl md:text-2xl font-semibold">
+                            {{ $article->title }}
                         </div>
-                    @endforeach
-</div>
+                        <img src="{{ $article->image_url ?? 'https://placehold.co/400x250/fce7f3/db2777?text=Artikel' }}" 
+                             onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=Error';"
+                             class="w-full h-48 md:h-56 object-cover" alt="Gambar Artikel: {{ $article->title }}">
+                        <div class="p-6 text-gray-700 flex-grow">
+                            <p class="text-base md:text-lg">{{ \Illuminate\Support\Str::limit(strip_tags($article->content), 120, '...') }}</p>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <button 
+                                type="button"
+                                onclick="openArticleModal({{ json_encode($article) }})"
+                                class="w-full bg-pink-500 text-white font-medium rounded-lg text-base px-5 py-3 hover:bg-pink-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75"
+                            >
+                                Baca Selengkapnya
+                            </button>
+                        </div>
                     </div>
-                    
-                    <!-- Controls -->
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                    @endforeach
                 </div>
+                @else
+                <p class="text-center text-gray-600 text-xl">Belum ada artikel yang tersedia saat ini.</p>
+                @endif
             </div>
         </section>
 
-        <!-- Features Section -->
-        <section class="w-full bg-pink-100 py-24">
+        <section class="w-full bg-pink-50 py-24">
             <div class="max-w-7xl mx-auto px-6">
-                <h2 class="text-5xl font-semibold text-pink-500 text-center mb-16 font-['Poppins']">
+                <h2 class="text-4xl md:text-5xl font-semibold text-pink-600 text-center mb-16">
                     Wujudkan Generasi Sehat melalui Pemantauan Gizi Harian
                 </h2>
 
-                <!-- Main Feature Image -->
-                <div class="flex justify-center mb-20">
+                <div class="flex justify-center mb-12 md:mb-20">
                     <img class="w-full max-w-4xl h-auto rounded-3xl shadow-2xl" 
-                         src="https://placehold.co/821x548" alt="Pemantauan gizi anak">
+                         src="{{asset('images/pemantauan.png')}}" 
+                         alt="Pemantauan gizi anak">
                 </div>
 
-                <!-- Features Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
-                    <!-- Feature 1 - Pencegahan Stunting -->
-                    <div class="feature-card bg-white rounded-3xl p-6 shadow-lg">
-                        <img class="w-full h-80 object-cover rounded-3xl mb-6" 
-                             src="https://placehold.co/413x313" alt="Pencegahan stunting">
-                        <h3 class="text-2xl font-semibold text-pink-500 mb-4">Pencegahan Stunting</h3>
-                        <p class="text-lg text-gray-700 font-['Poppins']">
-                            Stunting dapat dicegah melalui gizi seimbang, pemantauan tumbuh kembang rutin, dan perawatan sejak hamil hingga usia 5 tahun. Stuntcare hadir untuk mendukung orang tua dalam menjaga kesehatan anak setiap hari.
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 md:mt-20">
+                    <div class="feature-card bg-white rounded-3xl p-6 shadow-lg hover:translate-y-[-10px] hover:shadow-xl transition-all duration-300 ease-in-out">
+                        <img class="w-full h-56 md:h-64 object-cover rounded-2xl mb-6" 
+                             src="https://placehold.co/413x313/fce7f3/831843?text=Pencegahan" 
+                             onerror="this.src='https://placehold.co/413x313/fce7f3/831843?text=Error';"
+                             alt="Pencegahan stunting">
+                        <h3 class="text-2xl font-semibold text-pink-600 mb-4">Pencegahan Stunting</h3>
+                        <p class="text-base md:text-lg text-gray-700">
+                            Stunting dapat dicegah melalui gizi seimbang, pemantauan tumbuh kembang rutin, dan perawatan sejak hamil hingga usia 5 tahun. StuntCare hadir untuk mendukung orang tua.
                         </p>
                     </div>
-
-                    <!-- Feature 2 - Perkembangan Anak -->
-                    <div class="feature-card bg-white rounded-3xl p-6 shadow-lg">
-                        <img class="w-full h-64 object-cover rounded-3xl mb-6" 
-                             src="https://placehold.co/371x259" alt="Perkembangan anak">
-                        <h3 class="text-2xl font-semibold text-pink-500 mb-4">Perkembangan Cepat</h3>
-                        <p class="text-lg text-gray-700 font-['Poppins']">
-                            Perkembangan anak yang cepat adalah periode di mana anak mengalami peningkatan pertumbuhan fisik yang signifikan dalam waktu singkat. Ini sering terjadi pada bayi dan balita masa pubertas.
+                    <div class="feature-card bg-white rounded-3xl p-6 shadow-lg hover:translate-y-[-10px] hover:shadow-xl transition-all duration-300 ease-in-out">
+                        <img class="w-full h-56 md:h-64 object-cover rounded-2xl mb-6" 
+                             src="https://placehold.co/371x259/fbcfe8/9d174d?text=Perkembangan" 
+                             onerror="this.src='https://placehold.co/371x259/fbcfe8/9d174d?text=Error';"
+                             alt="Perkembangan anak">
+                        <h3 class="text-2xl font-semibold text-pink-600 mb-4">Perkembangan Cepat</h3>
+                        <p class="text-base md:text-lg text-gray-700">
+                            Anak mengalami peningkatan pertumbuhan fisik yang signifikan dalam waktu singkat. Ini sering terjadi pada bayi, balita, dan masa pubertas. Pantau terus perkembangannya.
                         </p>
                     </div>
-
-                    <!-- Feature 3 - Konsultasi Dokter -->
-                    <div class="feature-card bg-white rounded-3xl p-6 shadow-lg">
-                        <img class="w-full h-64 object-cover rounded-3xl mb-6" 
-                             src="https://placehold.co/371x259" alt="Konsultasi dokter">
-                        <h3 class="text-2xl font-semibold text-pink-500 mb-4">Konsultasi Dokter</h3>
-                        <p class="text-lg text-gray-700 font-['Poppins']">
-                            Dapatkan jawaban cepat dari dokter seputar pertumbuhan, pola makan, dan kesehatan anak. Fitur ini memudahkan orang tua berkonsultasi secara asinkron, cukup melalui aplikasi secara aman dan terpercaya.
+                    <div class="feature-card bg-white rounded-3xl p-6 shadow-lg hover:translate-y-[-10px] hover:shadow-xl transition-all duration-300 ease-in-out">
+                        <img class="w-full h-56 md:h-64 object-cover rounded-2xl mb-6" 
+                             src="https://placehold.co/371x259/fce7f3/831843?text=Konsultasi" 
+                             onerror="this.src='https://placehold.co/371x259/fce7f3/831843?text=Error';"
+                             alt="Konsultasi dokter">
+                        <h3 class="text-2xl font-semibold text-pink-600 mb-4">Konsultasi Dokter</h3>
+                        <p class="text-base md:text-lg text-gray-700">
+                            Dapatkan jawaban cepat dari dokter seputar pertumbuhan, pola makan, dan kesehatan anak. Fitur ini memudahkan orang tua berkonsultasi secara aman dan terpercaya.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
-
-       
     </main>
-    <!-- JavaScript for Typing Animation -->
+
+    <div id="article-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50 hidden p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between p-5 border-b border-gray-200">
+                <h3 id="modal-title" class="text-2xl font-semibold text-pink-600"></h3>
+                <button id="close-modal-button" class="text-gray-400 hover:text-gray-600 transition-colors text-3xl leading-none font-bold focus:outline-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 text-gray-700 overflow-y-auto">
+                <img id="modal-image" src="" class="w-full h-auto max-h-80 object-contain rounded-lg mb-4 shadow" alt="Gambar Artikel Detail" style="display:none;">
+                <div id="modal-content" class="prose max-w-none text-base md:text-lg leading-relaxed">
+                    </div>
+            </div>
+            <div class="flex justify-end p-5 border-t border-gray-200">
+                <button id="close-modal-footer-button" class="bg-pink-500 text-white px-6 py-2 rounded-lg hover:bg-pink-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-pink-400">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const texts = [
-                'Pantau tumbuh kembang anak dengan mudah',
-                'Konsultasi dengan dokter kapan saja',
-                'Jaga gizi harian untuk masa depan yang cerah'
-            ];
-            
-            let textIndex = 0;
-            let charIndex = 0;
+            // Typing Animation Script
             const typingElement = document.getElementById('typing');
-            const typingSpeed = 100;
-            const erasingSpeed = 50;
-            const delayBetweenTexts = 2000;
-            
-            function type() {
-                if (charIndex < texts[textIndex].length) {
-                    typingElement.textContent += texts[textIndex].charAt(charIndex);
-                    charIndex++;
-                    setTimeout(type, typingSpeed);
-                } else {
-                    setTimeout(erase, delayBetweenTexts);
+            if (typingElement) {
+                const texts = [
+                    'Pantau tumbuh kembang anak dengan mudah.',
+                    'Konsultasi dengan dokter kapan saja.',
+                    'Jaga gizi harian untuk masa depan yang cerah.'
+                ];
+                let textIndex = 0;
+                let charIndex = 0;
+                const typingSpeed = 100;
+                const erasingSpeed = 50;
+                const delayBetweenTexts = 2000;
+
+                function type() {
+                    if (charIndex < texts[textIndex].length) {
+                        typingElement.textContent += texts[textIndex].charAt(charIndex);
+                        charIndex++;
+                        setTimeout(type, typingSpeed);
+                    } else {
+                        setTimeout(erase, delayBetweenTexts);
+                    }
+                }
+
+                function erase() {
+                    if (charIndex > 0) {
+                        typingElement.textContent = texts[textIndex].substring(0, charIndex - 1);
+                        charIndex--;
+                        setTimeout(erase, erasingSpeed);
+                    } else {
+                        textIndex = (textIndex + 1) % texts.length;
+                        setTimeout(type, typingSpeed / 2); // Start typing next text a bit faster
+                    }
+                }
+                if (texts.length > 0) {
+                     setTimeout(type, 1000); // Initial delay before starting
                 }
             }
-            
-            function erase() {
-                if (charIndex > 0) {
-                    typingElement.textContent = texts[textIndex].substring(0, charIndex - 1);
-                    charIndex--;
-                    setTimeout(erase, erasingSpeed);
+
+            // Modal Script
+            const modal = document.getElementById('article-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalImage = document.getElementById('modal-image');
+            const modalContent = document.getElementById('modal-content');
+            const closeModalButton = document.getElementById('close-modal-button');
+            const closeModalFooterButton = document.getElementById('close-modal-footer-button');
+
+            window.openArticleModal = function(article) {
+                if (!modal || !modalTitle || !modalContent || !modalImage) {
+                    console.error('Modal elements not found!');
+                    return;
+                }
+                modalTitle.textContent = article.title || 'Detail Artikel';
+                
+                if (article.image_url) {
+                    modalImage.src = article.image_url;
+                    modalImage.alt = `Gambar Artikel: ${article.title || ''}`;
+                    modalImage.style.display = 'block';
+                     modalImage.onerror = () => {
+                        modalImage.src = 'https://placehold.co/600x400/fce7f3/db2777?text=Gambar+Error';
+                        modalImage.alt = 'Gambar tidak dapat dimuat';
+                    };
                 } else {
-                    textIndex = (textIndex + 1) % texts.length;
-                    setTimeout(type, typingSpeed);
+                    modalImage.style.display = 'none';
+                }
+                // Pastikan konten adalah HTML yang aman atau proses sesuai kebutuhan
+                modalContent.innerHTML = article.content || '<p>Konten tidak tersedia.</p>'; 
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+
+            function closeArticleModal() {
+                if (modal) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto'; // Restore background scrolling
                 }
             }
-            
-            // Start typing animation
-            setTimeout(type, 1000);
+
+            if (closeModalButton) closeModalButton.addEventListener('click', closeArticleModal);
+            if (closeModalFooterButton) closeModalFooterButton.addEventListener('click', closeArticleModal);
+
+            // Close modal on escape key
+            document.addEventListener('keydown', function (event) {
+                if (event.key === "Escape" && modal && !modal.classList.contains('hidden')) {
+                    closeArticleModal();
+                }
+            });
+
+            // Close modal when clicking outside of the modal content
+            if (modal) {
+                modal.addEventListener('click', function(event) {
+                    if (event.target === modal) { // Check if the click is on the backdrop
+                        closeArticleModal();
+                    }
+                });
+            }
         });
     </script>
 </x-app-layout>
