@@ -63,3 +63,5 @@ Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFo
 Route::resource('konsultasi-dokter', KonsultasiDokterController::class)->only([
     'index', 'show'
 ]);
+
+Route::resource('lihatprofile', LihatProfilController::class);
