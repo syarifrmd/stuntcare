@@ -12,12 +12,18 @@ class KonsultasiDokter extends Model
     protected $table = 'konsultasi_dokters'; // pastikan sesuai dengan nama tabel di database
 
     protected $fillable = [
+        'dokter_id',
         'nama_dokter',
         'no_wa_dokter',
-        'whatsapp_log',
+        'fotodokter',
         'waktu_konsultasi',
         'status',
         'catatan_user',
         'catatan_dokter',
     ];
+
+    public function dokter()
+    {
+        return $this->belongsTo(User::class, 'dokter_id');
+    }
 }

@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('artikels', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->unsignedBigInteger('dokter_id');
             $table->text('content');
             $table->string('topic')->nullable();
             $table->unsignedBigInteger('author_id');
             $table->timestamps();
 
             // Relasi ke tabel users
+            $table->foreign('dokter_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('author_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

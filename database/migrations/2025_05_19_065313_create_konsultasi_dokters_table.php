@@ -14,18 +14,19 @@ return new class extends Migration
     {
         Schema::create('konsultasi_dokters', function (Blueprint $table) {
             $table->id();
-
+            $table->unsignedBigInteger('dokter_id'); // This is the column we need
             $table->string('nama_dokter');
             $table->string('no_wa_dokter');
-            $table->string('fotodokter')->nullable();
-            $table->dateTime('waktu_konsultasi')->nullable();
-            $table->enum('status', ['terbuka', 'selesai', 'ditutup'])->default('terbuka');
+            $table->string('fotodokter');
+            $table->timestamp('waktu_konsultasi');
+            $table->string('status');
             $table->text('catatan_user')->nullable();
             $table->text('catatan_dokter')->nullable();
-
-
             $table->timestamps();
+            
+            $table->foreign('dokter_id')->references('id')->on('users'); // Assuming "users" table for doctors
         });
+
     }
 
     /**

@@ -15,12 +15,20 @@ class Artikel extends Model
         'title',
         'content',
         'topic',
+        'dokter_id',
         'author_id',
     ];
 
     /**
      * Relasi ke user (penulis artikel)
      */
+
+    public function dokter()
+    {
+        return $this->belongsTo(User::class, 'dokter_id');
+    }
+
+
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');

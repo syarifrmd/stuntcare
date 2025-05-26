@@ -2,158 +2,131 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JadwalKonsultasi;
-use App\Models\Artikel;
 use App\Models\KonsultasiDokter;
+use App\Models\Artikel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DokterController extends Controller
 {
-    public function index()
+    // Fungsi untuk menampilkan Dashboard Dokter
+    public function dashboard()
     {
-        return view('dokter.dashboard');
+        // Ambil artikel terbaru untuk ditampilkan di dashboard
+        $artikels = Artikel::latest()->take(3)->get(); // Menampilkan 3 artikel terbaru
+        return view('dokter.dashboard', compact('artikels'));  // Tampilkan halaman dashboard dokter
     }
 
-    // Show all consultation schedules
-    public function indexJadwal()
+    // --- CRUD untuk Konsultasi Dokter ---
+
+    // Menampilkan semua data Konsultasi Dokter
+    public function indexKonsultasi()
     {
-        $dokter = Auth::user();
-        $jadwals = JadwalKonsultasi::where('dokter_id', $dokter->id)->get();
-        return view('dokter.jadwal.index', compact('jadwals'));
+        $konsultasi = KonsultasiDokter::all();  // Mengambil semua data konsultasi dokter
+        return view('dokter.konsultasi.index', compact('konsultasi'));
     }
 
-    // Show the form for creating a new consultation schedule
-    public function createJadwal()
+    // Menampilkan data Konsultasi Dokter berdasarkan ID
+    public function showKonsultasi($id)
     {
-        return view('dokter.jadwal.create');
+        $konsultasi = KonsultasiDokter::find($id);
+        return view('dokter.konsultasi.show', compact('konsultasi'));
     }
 
-    // Store a newly created consultation schedule
-    public function storeJadwal(Request $request)
+    // Menyimpan data Konsultasi Dokter baru
+    public function storeKonsultasi(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
+            'dokter_id' => 'required|exists:users,id',
+            'nama_dokter' => 'required|string',
+            'no_wa_dokter' => 'required|string',
             'waktu_konsultasi' => 'required|date',
             'status' => 'required|string',
         ]);
 
-        $dokter = Auth::user();
+        KonsultasiDokter::create($request->all());
 
-        JadwalKonsultasi::create([
-            'dokter_id' => $dokter->id,
-            'waktu_konsultasi' => $validated['waktu_konsultasi'],
-            'status' => $validated['status'],
-        ]);
-
-        return redirect()->route('dokter.jadwal.index')->with('success', 'Jadwal konsultasi berhasil ditambahkan');
+        return redirect()->route('dokter.konsultasi.index')->with('success', 'Konsultasi berhasil ditambahkan');
     }
 
-    // Show the form for editing the specified consultation schedule
-    public function editJadwal(JadwalKonsultasi $jadwal)
+    // Memperbarui data Konsultasi Dokter
+    public function updateKonsultasi(Request $request, $id)
     {
-        $this->authorize('update', $jadwal); // Make sure the doctor is allowed to edit this schedule
-        return view('dokter.jadwal.edit', compact('jadwal'));
+        $konsultasi = KonsultasiDokter::find($id);
+        if (!$konsultasi) {
+            return redirect()->route('dokter.konsultasi.index')->with('error', 'Konsultasi tidak ditemukan');
+        }
+
+        $konsultasi->update($request->all());
+        return redirect()->route('dokter.konsultasi.index')->with('success', 'Konsultasi berhasil diperbarui');
     }
 
-    // Update the specified consultation schedule
-    public function updateJadwal(Request $request, JadwalKonsultasi $jadwal)
+    // Menghapus data Konsultasi Dokter
+    public function destroyKonsultasi($id)
     {
-        $this->authorize('update', $jadwal); // Make sure the doctor is allowed to edit this schedule
+        $konsultasi = KonsultasiDokter::find($id);
+        if (!$konsultasi) {
+            return redirect()->route('dokter.konsultasi.index')->with('error', 'Konsultasi tidak ditemukan');
+        }
 
-        $validated = $request->validate([
-            'waktu_konsultasi' => 'required|date',
-            'status' => 'required|string',
-        ]);
-
-        $jadwal->update($validated);
-
-        return redirect()->route('dokter.jadwal.index')->with('success', 'Jadwal konsultasi berhasil diperbarui');
+        $konsultasi->delete();
+        return redirect()->route('dokter.konsultasi.index')->with('success', 'Konsultasi berhasil dihapus');
     }
 
-    // Remove the specified consultation schedule
-    public function destroyJadwal(JadwalKonsultasi $jadwal)
-    {
-        $this->authorize('delete', $jadwal); // Make sure the doctor is allowed to delete this schedule
+    // --- CRUD untuk Artikel ---
 
-        $jadwal->delete();
-
-        return redirect()->route('dokter.jadwal.index')->with('success', 'Jadwal konsultasi berhasil dihapus');
-    }
-
-    // Show all articles
+    // Menampilkan semua data Artikel
     public function indexArtikel()
     {
-        $dokter = Auth::user();
-        $artikels = Artikel::where('dokter_id', $dokter->id)->get();
+        $artikels = Artikel::all();  // Mengambil semua data artikel
         return view('dokter.artikel.index', compact('artikels'));
     }
 
-    // Show the form for creating a new article
-    public function createArtikel()
+    // Menampilkan data Artikel berdasarkan ID
+    public function showArtikel($id)
     {
-        return view('dokter.artikel.create');
+        $artikel = Artikel::find($id);
+        if ($artikel) {
+            return view('dokter.artikel.show', compact('artikel'));
+        }
+        return redirect()->route('dokter.artikel.index')->with('error', 'Artikel tidak ditemukan');
     }
 
-    // Store a newly created article
+    // Menyimpan data Artikel baru
     public function storeArtikel(Request $request)
     {
-        $validated = $request->validate([
-            'judul' => 'required|string|max:255',
-            'konten' => 'required|string',
+        $request->validate([
+            'title' => 'required|string',
+            'dokter_id' => 'required|exists:users,id',
+            'content' => 'required|string',
+            'author_id' => 'required|exists:users,id',
         ]);
 
-        $dokter = Auth::user();
-
-        Artikel::create([
-            'dokter_id' => $dokter->id,
-            'judul' => $validated['judul'],
-            'konten' => $validated['konten'],
-        ]);
+        Artikel::create($request->all());
 
         return redirect()->route('dokter.artikel.index')->with('success', 'Artikel berhasil ditambahkan');
     }
 
-    // Show the form for editing the specified article
-    public function editArtikel(Artikel $artikel)
+    // Memperbarui data Artikel
+    public function updateArtikel(Request $request, $id)
     {
-        $this->authorize('update', $artikel); // Make sure the doctor is allowed to edit this article
-        return view('dokter.artikel.edit', compact('artikel'));
-    }
+        $artikel = Artikel::find($id);
+        if (!$artikel) {
+            return redirect()->route('dokter.artikel.index')->with('error', 'Artikel tidak ditemukan');
+        }
 
-    // Update the specified article
-    public function updateArtikel(Request $request, Artikel $artikel)
-    {
-        $this->authorize('update', $artikel); // Make sure the doctor is allowed to edit this article
-
-        $validated = $request->validate([
-            'judul' => 'required|string|max:255',
-            'konten' => 'required|string',
-        ]);
-
-        $artikel->update($validated);
-
+        $artikel->update($request->all());
         return redirect()->route('dokter.artikel.index')->with('success', 'Artikel berhasil diperbarui');
     }
 
-    // Remove the specified article
-    public function destroyArtikel(Artikel $artikel)
+    // Menghapus data Artikel
+    public function destroyArtikel($id)
     {
-        $this->authorize('delete', $artikel); // Make sure the doctor is allowed to delete this article
+        $artikel = Artikel::find($id);
+        if (!$artikel) {
+            return redirect()->route('dokter.artikel.index')->with('error', 'Artikel tidak ditemukan');
+        }
 
         $artikel->delete();
-
         return redirect()->route('dokter.artikel.index')->with('success', 'Artikel berhasil dihapus');
-    }
-
-    // Confirm consultation (accept or reject)
-    public function konfirmasiKonsultasi(KonsultasiDokter $konsultasi)
-    {
-        $this->authorize('update', $konsultasi); // Make sure the doctor is allowed to confirm the consultation
-
-        // Toggle the status of the consultation
-        $konsultasi->status = $konsultasi->status === 'terima' ? 'tolak' : 'terima';
-        $konsultasi->save();
-
-        return redirect()->route('dokter.konsultasi.konfirmasi', $konsultasi->id)->with('success', 'Konsultasi berhasil diperbarui');
     }
 }

@@ -49,6 +49,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+// Route untuk dokter
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Route untuk dashboard dokter
+    Route::get('/dokter', [DokterController::class, 'dashboard'])->name('dokter.dashboard');
+    
+    // Konsultasi Dokter (CRUD) 
+    Route::get('dokter/konsultasi', [DokterController::class, 'indexKonsultasi'])->name('dokter.konsultasi.index');
+    Route::get('dokter/konsultasi/{id}', [DokterController::class, 'showKonsultasi'])->name('dokter.konsultasi.show');
+    Route::post('dokter/konsultasi', [DokterController::class, 'storeKonsultasi'])->name('dokter.konsultasi.store');
+    Route::put('dokter/konsultasi/{id}', [DokterController::class, 'updateKonsultasi'])->name('dokter.konsultasi.update');
+    Route::delete('dokter/konsultasi/{id}', [DokterController::class, 'destroyKonsultasi'])->name('dokter.konsultasi.destroy');
+    
+    // Artikel (CRUD) 
+    Route::get('dokter/artikel', [DokterController::class, 'indexArtikel'])->name('dokter.artikel.index');
+    Route::get('dokter/artikel/{id}', [DokterController::class, 'showArtikel'])->name('dokter.artikel.show');
+    Route::post('dokter/artikel', [DokterController::class, 'storeArtikel'])->name('dokter.artikel.store');
+    Route::put('dokter/artikel/{id}', [DokterController::class, 'updateArtikel'])->name('dokter.artikel.update');
+    Route::delete('dokter/artikel/{id}', [DokterController::class, 'destroyArtikel'])->name('dokter.artikel.destroy');
+});
+
+
+
 // Auth routes dari Breeze
 require __DIR__.'/auth.php';
 
@@ -68,4 +91,5 @@ Route::resource('konsultasi-dokter', KonsultasiDokterController::class)->only([
 ]);
 
 Route::resource('lihatprofile', LihatProfilController::class);
-Route::resource('dokter', DokterController::class);
+
+
