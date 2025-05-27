@@ -137,7 +137,7 @@
                     </div>
                     <div class="feature-card bg-white rounded-3xl p-6 shadow-lg hover:translate-y-[-10px] hover:shadow-xl transition-all duration-300 ease-in-out">
                         <img class="w-full h-56 md:h-64 object-cover rounded-2xl mb-6" 
-                             src="{{asset('images/konsuldoketer.jpg')}}" 
+                             src="{{asset('images/konsuldokter.jpg')}}" 
                              onerror="this.src='https://placehold.co/371x259/fce7f3/831843?text=Error';"
                              alt="Konsultasi dokter">
                         <h3 class="text-2xl font-semibold text-pink-600 mb-4">Konsultasi Dokter</h3>
