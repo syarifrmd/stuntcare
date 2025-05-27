@@ -14,6 +14,7 @@ class KonsultasiDokter extends Model
     protected $fillable = [
         'dokter_id',
         'nama_dokter',
+        'user_id',
         'no_wa_dokter',
         'fotodokter',
         'waktu_konsultasi',
@@ -25,5 +26,10 @@ class KonsultasiDokter extends Model
     public function dokter()
     {
         return $this->belongsTo(User::class, 'dokter_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

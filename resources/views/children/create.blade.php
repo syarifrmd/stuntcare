@@ -10,8 +10,8 @@
 <body class="bg-white">
   <x-app-layout>
       <span name="header"></span>
-
-      <div class="max-w-screen-xl mx-auto relative overflow-hidden py-10">
+      <div class="bg-white">
+      <div class=" bg-white max-w-screen-xl mx-auto relative overflow-hidden py-10">
          <h2 class="text-2xl px-6 py-2 font-semibold text-pink-600 ">Data Anak Anda</h2>
       <div x-data="{ open: false }" class="px-6 py-2 "> <!-- Tombol buka modal --> <button @click="open = true" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition"> + Tambah Data Anak </button>
       <!-- Modal -->
@@ -199,9 +199,7 @@
     </div>
   </div> --}}
 
-  
-
-
+</div>
   </x-app-layout>
 </body>
 </html>

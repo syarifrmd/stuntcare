@@ -4,7 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-
 return new class extends Migration
 {
     /**
@@ -14,19 +13,21 @@ return new class extends Migration
     {
         Schema::create('konsultasi_dokters', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dokter_id'); // This is the column we need
-            $table->string('nama_dokter');
-            $table->string('no_wa_dokter');
-            $table->string('fotodokter');
-            $table->timestamp('waktu_konsultasi');
-            $table->string('status');
-            $table->text('catatan_user')->nullable();
-            $table->text('catatan_dokter')->nullable();
+            $table->unsignedBigInteger('dokter_id'); // ID dokter yang membuat jadwal
+            $table->unsignedBigInteger('user_id')->nullable(); // ID user yang memesan jadwal
+            $table->string('nama_dokter'); // Nama dokter
+            $table->string('no_wa_dokter'); // No WA dokter
+            $table->string('fotodokter')->nullable(); // Foto dokter (optional)
+            $table->timestamp('waktu_konsultasi'); // Waktu konsultasi
+            $table->enum('status', ['Tersedia', 'Memesan', 'Dipesan', 'Selesai', 'Dibatalkan'])->default('Tersedia'); // Status jadwal
+            $table->text('catatan_user')->nullable(); // Catatan dari user
+            $table->text('catatan_dokter')->nullable(); // Catatan dari dokter
             $table->timestamps();
             
-            $table->foreign('dokter_id')->references('id')->on('users'); // Assuming "users" table for doctors
+            // Menambahkan foreign key untuk dokter_id dan user_id
+            $table->foreign('dokter_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
-
     }
 
     /**

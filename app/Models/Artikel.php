@@ -13,9 +13,11 @@ class Artikel extends Model
 
     protected $fillable = [
         'title',
+        'foto_artikel',
         'content',
         'topic',
         'dokter_id',
+        'status',
         'author_id',
     ];
 

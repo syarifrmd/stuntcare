@@ -41,7 +41,7 @@
                         Pemantauan gizi
                 </a>
                 <!--Konsultasi Doktor -->
-                <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-pink-500 bg-pink-50 border border-pink-300 rounded-full hover:bg-pink-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110">
+                <a href="{{route('konsultasidokter.index')}}" class="flex items-center px-4 py-2 text-sm font-medium text-pink-500 bg-pink-50 border border-pink-300 rounded-full hover:bg-pink-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -126,7 +126,7 @@
                 </svg>
                 Pemantauan gizi
             </a>
-            <a href="#" class="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500 hover:border-l-4 hover:border-pink-500">
+            <a href="{{route('konsultasidokter.index')}}" class="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-500 hover:border-l-4 hover:border-pink-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
