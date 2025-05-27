@@ -7,18 +7,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="//unpkg.com/alpinejs" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'montserrat': ['Montserrat', 'sans-serif'],
-                        'poppins': ['Poppins', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         body {
             display: flex;
@@ -52,16 +40,12 @@
 
 <body class="bg-gradient-to-l from-pink-50 to-pink-400/30 text-gray-800">
 <x-app-layout>
-    <div class="bg-pink-50">
+    <div class="bg-white">
     <span name="header"></span>
-    <header class="bg-pink-600 text-white text-center py-6 sm:py-8 shadow-lg">
-        <div class="container mx-auto px-4">
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold font-montserrat">Jadwal Konsultasi Dokter</h1>
-            <p class="mt-1 sm:mt-2 text-sm sm:text-base opacity-90">Pilih jadwal konsultasi yang tersedia dan lakukan pemesanan.</p>
+        <div class="container mx-auto px-6 pt-8 pb-4">
+            <h1 class=" text-pink-500 text-2xl sm:text-3xl lg:text-3xl font-bold font-montserrat">Jadwal Konsultasi Dokter</h1>
         </div>
-    </header>
-
-    <main class="container mx-auto py-8 px-4 sm:px-6 lg:px-8" x-data="jadwalPemesananData()">
+    <main class="container mx-auto pb-8 px-4 sm:px-6 lg:px-8" x-data="jadwalPemesananData()">
         <div class="bg-white rounded-xl shadow-xl p-4 sm:p-6 md:p-8">
 
             @if(session('success'))

@@ -74,11 +74,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('dokter/konsultasi/{id}', [DokterController::class, 'destroyJadwal'])->name('dokter.konsultasi.destroy');
 
     // Artikel (CRUD) 
-    Route::get('dokter/artikel', [DokterController::class, 'indexArtikel'])->name('dokter.artikel.index');
-    Route::get('dokter/artikel/{id}', [DokterController::class, 'showArtikel'])->name('dokter.artikel.show');
-    Route::post('dokter/artikel', [DokterController::class, 'storeArtikel'])->name('dokter.artikel.store');
-    Route::put('dokter/artikel/{id}', [DokterController::class, 'updateArtikel'])->name('dokter.artikel.update');
-    Route::delete('dokter/artikel/{id}', [DokterController::class, 'destroyArtikel'])->name('dokter.artikel.destroy');
+    Route::get('dokter/artikel', [ArtikelController::class, 'indexDokter'])->name('dokter.artikel.index');
+    Route::post('dokter/artikel', [ArtikelController::class, 'createDokter'])->name('dokter.artikel.create');
+    Route::get('dokter/artikel/{id}', [ArtikelController::class, 'showDokter'])->name('dokter.artikel.show');
+    Route::post('dokter/artikel', [ArtikelController::class, 'storeDokter'])->name('dokter.artikel.store');
+    Route::put('dokter/artikel/{artikel}', [ArtikelController::class, 'updateDokter'])->name('dokter.artikel.update');
+    Route::delete('dokter/artikel/{artikel}', [ArtikelController::class, 'destroyDokter'])->name('dokter.artikel.destroy');
+
 });
 
 

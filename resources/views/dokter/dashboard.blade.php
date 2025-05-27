@@ -63,6 +63,12 @@
                     <h2 class="text-4xl font-semibold text-pink-600 text-center mb-12">
                         Artikel Terbaru
                     </h2>
+                <div class="text-center mb-8">
+                        <a href="{{ route('dokter.artikel.index') }}"
+                            class="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition-colors duration-300">
+                            Lihat Artikel
+                        </a>
+                    </div>
 
                     @if(isset($artikels) && $artikels->count() > 0)
                         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

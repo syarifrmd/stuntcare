@@ -170,6 +170,100 @@ class DokterController extends Controller
         }
         return view('dokter.konsultasi.show', compact('konsultasi'));
     }
+    
+    // public function indexArtikel(Request $request)
+    // {
+    //     $artikels = Artikel::where('author_id', Auth::id())
+    //                        ->latest() // Urutkan berdasarkan terbaru
+    //                        ->paginate(10); // Paginasi jika banyak artikel
+
+    //     return view('dokter.artikel.index', compact('artikels'));
+    // }
+
+    // /**
+    //  * Menyimpan artikel baru yang dibuat oleh dokter.
+    //  * Tidak memerlukan createArtikel() karena form akan ada di modal.
+    //  */
+    // public function storeArtikel(Request $request)
+    // {
+    //     $request->validate([
+    //         'title' => 'required|string|max:255',
+    //         'topic' => 'required|string|max:255',
+    //         'content' => 'required|string',
+    //     ]);
+
+    //     Artikel::create([
+    //         'title' => $request->title,
+    //         'topic' => $request->topic,
+    //         'content' => $request->content,
+    //         'dokter_id' => Auth::id(), // Set penulis sebagai dokter yang login
+    //         'author_id' => Auth::id(),
+    //     ]);
+
+    //     return redirect()->route('dokter.artikel.index')->with('success', 'Artikel berhasil ditambahkan.');
+    // }
+
+    // /**
+    //  * Menampilkan data artikel untuk diedit di modal.
+    //  * Metode ini bisa juga tidak diperlukan jika data diambil langsung di view via @json.
+    //  * Namun, untuk konsistensi, bisa saja ada.
+    //  * Untuk modal, data biasanya dikirim ke view utama (index) dan Alpine yang mengelolanya.
+    //  * Jadi, editArtikel($id) yang mengembalikan view form terpisah tidak diperlukan.
+    //  */
+
+    // /**
+    //  * Memperbarui artikel yang sudah ada.
+    //  */
+    // public function updateArtikel(Request $request, $id)
+    // {
+    //     $artikel = Artikel::where('id', $id)
+    //                       ->where('author_id', Auth::id()) // Pastikan dokter hanya update artikelnya sendiri
+    //                       ->firstOrFail();
+
+    //     $request->validate([
+    //         'title' => 'required|string|max:255',
+    //         'topic' => 'required|string|max:255',
+    //         'content' => 'required|string',
+    //     ]);
+
+    //     $artikel->update([
+    //         'title' => $request->title,
+    //         'topic' => $request->topic,
+    //         'content' => $request->content,
+    //     ]);
+
+    //     return redirect()->route('dokter.artikel.index')->with('success', 'Artikel berhasil diperbarui.');
+    // }
+
+    // /**
+    //  * Menghapus artikel.
+    //  */
+    // public function destroyArtikel($id)
+    // {
+    //     $artikel = Artikel::where('id', $id)
+    //                       ->where('author_id', Auth::id()) // Pastikan dokter hanya hapus artikelnya sendiri
+    //                       ->firstOrFail();
+        
+    //     $artikel->delete();
+
+    //     return redirect()->route('dokter.artikel.index')->with('success', 'Artikel berhasil dihapus.');
+    // }
+
+    // /**
+    //  * Menampilkan detail satu artikel (jika diperlukan halaman detail terpisah).
+    //  * Untuk CRUD modal, ini mungkin tidak digunakan secara langsung oleh dokter.
+    //  */
+    // public function showArtikel($id)
+    // {
+    //     // Bisa jadi ini untuk public view atau jika dokter ingin melihat preview.
+    //     // Untuk CRUD dokter, fokus pada index, store, update, destroy.
+    //     $artikel = Artikel::with('author')->findOrFail($id);
+    //     // Tambahkan pengecekan otorisasi jika hanya dokter tertentu yang boleh lihat detail artikel tertentu
+    //     // if ($artikel->author_id !== Auth::id() && Auth::user()->role !== 'admin') {
+    //     //     abort(403, 'Anda tidak berhak melihat artikel ini.');
+    //     // }
+    //     return view('dokter.artikel.show', compact('artikel')); // Anda perlu view 'dokter.artikel.show'
+    // }
 
     // storeKonsultasi, updateKonsultasi, destroyKonsultasi mungkin tidak relevan jika dokter hanya mengelola jadwalnya sendiri
     // dan tidak membuat entitas "konsultasi" secara manual dengan cara ini.

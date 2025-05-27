@@ -28,6 +28,18 @@
           <div class="bg-pink-500 py-4 px-6 text-white text-2xl font-semibold">
               {{ $artikel->title }}
           </div>
+          
+              <div class="w-full h-32 rounded mb-2 overflow-hidden">
+                    @if ($artikel->foto_artikel)
+                        <img src="{{ asset('storage/' . $artikel->foto_artikel) }}" alt="{{ $artikel->title }}"
+                            class="w-full h-full object-cover rounded">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-sm">
+                            Tidak ada gambar
+                        </div>
+                    @endif
+              </div>
+
           <div class="p-4 text-sm text-rose-900 flex-grow">
             <p>{{ \Illuminate\Support\Str::limit(strip_tags($artikel->topic), 100, '...') }}</p>
           </div>

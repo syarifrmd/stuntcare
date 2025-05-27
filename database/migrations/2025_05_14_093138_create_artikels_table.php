@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('artikels', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('foto_artikel')->nullable();
             $table->unsignedBigInteger('dokter_id');
             $table->text('content');
             $table->string('topic')->nullable();
             $table->unsignedBigInteger('author_id');
+            $table->enum('status', ['Draft', 'published'])->default('draft');
             $table->timestamps();
 
             // Relasi ke tabel users
