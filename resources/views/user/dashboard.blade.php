@@ -117,7 +117,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 md:mt-20">
                     <div class="feature-card bg-white rounded-3xl p-6 shadow-lg hover:translate-y-[-10px] hover:shadow-xl transition-all duration-300 ease-in-out">
                         <img class="w-full h-56 md:h-64 object-cover rounded-2xl mb-6" 
-                             src="https://placehold.co/413x313/fce7f3/831843?text=Pencegahan" 
+                             src="{{asset('images/makananbergizi.jpg')}}" 
                              onerror="this.src='https://placehold.co/413x313/fce7f3/831843?text=Error';"
                              alt="Pencegahan stunting">
                         <h3 class="text-2xl font-semibold text-pink-600 mb-4">Pencegahan Stunting</h3>
@@ -127,7 +127,7 @@
                     </div>
                     <div class="feature-card bg-white rounded-3xl p-6 shadow-lg hover:translate-y-[-10px] hover:shadow-xl transition-all duration-300 ease-in-out">
                         <img class="w-full h-56 md:h-64 object-cover rounded-2xl mb-6" 
-                             src="https://placehold.co/371x259/fbcfe8/9d174d?text=Perkembangan" 
+                             src="{{asset('images/akusedangtinggi.jpeg')}}" 
                              onerror="this.src='https://placehold.co/371x259/fbcfe8/9d174d?text=Error';"
                              alt="Perkembangan anak">
                         <h3 class="text-2xl font-semibold text-pink-600 mb-4">Perkembangan Cepat</h3>
@@ -137,7 +137,7 @@
                     </div>
                     <div class="feature-card bg-white rounded-3xl p-6 shadow-lg hover:translate-y-[-10px] hover:shadow-xl transition-all duration-300 ease-in-out">
                         <img class="w-full h-56 md:h-64 object-cover rounded-2xl mb-6" 
-                             src="https://placehold.co/371x259/fce7f3/831843?text=Konsultasi" 
+                             src="{{asset('images/konsuldokter.jpg')}}" 
                              onerror="this.src='https://placehold.co/371x259/fce7f3/831843?text=Error';"
                              alt="Konsultasi dokter">
                         <h3 class="text-2xl font-semibold text-pink-600 mb-4">Konsultasi Dokter</h3>
