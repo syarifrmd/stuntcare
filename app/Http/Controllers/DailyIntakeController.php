@@ -5,15 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\DailyIntake;
 use App\Models\DailyNutritionSummaries;
 use App\Models\Children;
-use App\Models\NutritionNeedsByAge;
 use App\Models\Food;
+use App\Models\NutritionNeedsByAge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class DailyIntakeController extends Controller
 {
-    // Menyimpan data intake makanan dan menghitung statistik harian
     public function storeFromFood(Request $request)
     {
         // Validasi input
@@ -23,33 +22,22 @@ class DailyIntakeController extends Controller
             'time_of_day' => 'required|in:Pagi,Siang,Malam,Cemilan',
         ]);
 
-    DailyIntake::create([
-        'id'     => Auth::id(),
-        'food_id'     => $request->food_id,
-        'child_id'    => $request->child_id ?? null,
-        'time_of_day' => $request->time_of_day,
-        'portion'     => 1,
-        'date'        => now()->toDateString(),
-    ]);
-
-    return redirect()->back()->with('success', 'Makanan berhasil ditambahkan ke konsumsi harian.');
-}
-    public function store(Request $request)
-{
-    foreach ($request->intakes as $intake) {
-        DailyIntake::create([
-            'child_id' => $intake['child_id'],
-            'food_id' => $intake['food_id'],
-            'portion' => $intake['portion'],
+        // Simpan intake makanan
+        $intake = DailyIntake::create([
+            'id' => Auth::id(),
+            'food_id' => $request->food_id,
+            'child_id' => $request->child_id ?? null,
             'time_of_day' => $request->time_of_day,
+            'portion' => 1,
+            'date' => now()->toDateString(),
         ]);
+
+        // Hitung gizi harian setelah data intake disimpan
+        $this->updateDailyNutritionSummary($intake->child_id);
+
+        return redirect()->back()->with('success', 'Makanan berhasil ditambahkan ke konsumsi harian.');
     }
 
-    return redirect()->back()->with('success', 'Data makanan berhasil disimpan untuk semua anak.');
-}
-
-
-    // Fungsi untuk menghitung dan memperbarui statistik gizi harian
     public function updateDailyNutritionSummary($childId)
     {
         // Ambil data anak

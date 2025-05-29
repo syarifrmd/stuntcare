@@ -14,59 +14,42 @@ use Carbon\Carbon;
 class PemantauanController extends Controller
 {
     // Menampilkan halaman utama pemantauan gizi
-    public function index()
-    {
-        $userId = Auth::id();
-        
-        // Cek apakah user memiliki data anak
-        $child = Children::where('user_id', $userId)->first();
-        
-        // Jika tidak ada data anak, arahkan user ke halaman untuk menambah anak
-        if (!$child) {
-            return redirect()->route('children.create')->with('error', 'Anda belum menambahkan data anak. Silakan tambahkan data anak terlebih dahulu.');
-        }
+public function index(Request $request)
+{
+    $userId = Auth::id();
+    $childId = $request->query('child_id');
 
-        $date = now()->toDateString(); // Ambil tanggal hari ini
-
-        // Ambil data intake makanan harian
-        $intakes = DailyIntake::where('child_id', $child->id)
-            ->whereDate('date', $date)
-            ->with('food') // Mengambil informasi makanan
-            ->get();
-
-        // Ambil summary gizi harian jika ada
-        $summary = DailyNutritionSummaries::where('child_id', $child->id)
-            ->whereDate('date', $date)
-            ->first();
-
-        // Ambil daftar makanan yang ada
-        $foods = Food::all();
-         // Ambil 4 makanan terbaru
-        $foods = Food::orderBy('created_at', 'desc')->take(4)->get();
-        
-                // Calculate the age in months
-        $birthDate = Carbon::parse($child->birth_date);
-        $ageInMonths = $birthDate->diffInMonths(Carbon::now());
-
-        // Get daily nutrition summaries for today
-        $summary = DailyNutritionSummaries::where('child_id', $child->id)
-            ->whereDate('date', Carbon::today())
-            ->first();
-
-        // Get food intake for the day (Pagi, Siang, Malam, Cemilan)
-        $intakes = DailyIntake::with('food')
-            ->where('child_id', $child->id)
-            ->whereDate('date', Carbon::today())
-            ->get();
-
-        // Get the nutritional needs for the child's age range
-        $nutritionNeeds = NutritionNeedsByAge::where('age_range', $this->getAgeRange($ageInMonths))->first();
-
-
-        return view('pemantauan.index', compact('child', 'intakes', 'summary', 'foods','nutritionNeeds', 'ageInMonths'));
+    if (!$childId) {
+        return redirect()->back()->with('error', 'Tidak ada anak yang dipilih.');
     }
 
-        // Get the age range based on the child's age in months
+    $child = Children::where('user_id', $userId)->where('id', $childId)->firstOrFail();
+
+    $date = now()->toDateString();
+
+    $intakes = DailyIntake::where('child_id', $child->id)
+        ->whereDate('date', $date)
+        ->with('food')
+        ->get();
+
+    $summary = DailyNutritionSummaries::where('child_id', $child->id)
+        ->whereDate('date', $date)
+        ->first();
+
+    // Ambil daftar makanan yang ada
+    $foods = Food::all();
+    // Ambil 4 makanan terbaru
+    $foods = Food::orderBy('created_at', 'desc')->take(4)->get();
+
+    $birthDate = Carbon::parse($child->birth_date);
+    $ageInMonths = round($birthDate->diffInMonths(Carbon::now()));
+
+    $nutritionNeeds = NutritionNeedsByAge::where('age_range', $this->getAgeRange($ageInMonths))->first();
+
+    return view('pemantauan.index', compact('child','foods' ,'intakes', 'summary', 'nutritionNeeds', 'ageInMonths'));
+}
+
+    // Get the age range based on the child's age in months
     private function getAgeRange($ageInMonths)
     {
         if ($ageInMonths <= 6) {
@@ -83,8 +66,6 @@ class PemantauanController extends Controller
         // You can expand age ranges if necessary
         return '10 tahun ke atas'; 
     }
-
-    
 
     // Menghitung gizi harian dan menyimpannya
     public function hitungGiziHarian($childId, $date = null)

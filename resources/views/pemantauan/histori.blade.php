@@ -11,7 +11,12 @@
     <span name="header"></span>
 
     <div class="max-w-full px-6 md:px-20 mx-auto relative bg-white overflow-hidden py-10">
-        <div class="text-pink-500 mb-4 font-semibold text-2xl text-center md:text-left">
+        <div class="flex items-center text-pink-500 mb-4 font-semibold text-2xl text-center md:text-left">
+            <a href="{{route('pemantauan.index', ['child_id' => $child->id])}}"  class="p-2 flex items-center text-pink-500 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="34" height="36" fill="currentColor" class="bi bi-arrow-left mr-4" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+            </a>
             <h1>Kalender</h1>
         </div>    
         
