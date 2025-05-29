@@ -9,7 +9,7 @@ use App\Models\Food;
 use App\Models\NutritionNeedsByAge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
 class PemantauanController extends Controller
 {
@@ -43,8 +43,45 @@ class PemantauanController extends Controller
         $foods = Food::all();
          // Ambil 4 makanan terbaru
         $foods = Food::orderBy('created_at', 'desc')->take(4)->get();
+        
+                // Calculate the age in months
+        $birthDate = Carbon::parse($child->birth_date);
+        $ageInMonths = $birthDate->diffInMonths(Carbon::now());
 
-        return view('pemantauan.index', compact('child', 'intakes', 'summary', 'foods'));
+        // Get daily nutrition summaries for today
+        $summary = DailyNutritionSummaries::where('child_id', $child->id)
+            ->whereDate('date', Carbon::today())
+            ->first();
+
+        // Get food intake for the day (Pagi, Siang, Malam, Cemilan)
+        $intakes = DailyIntake::with('food')
+            ->where('child_id', $child->id)
+            ->whereDate('date', Carbon::today())
+            ->get();
+
+        // Get the nutritional needs for the child's age range
+        $nutritionNeeds = NutritionNeedsByAge::where('age_range', $this->getAgeRange($ageInMonths))->first();
+
+
+        return view('pemantauan.index', compact('child', 'intakes', 'summary', 'foods','nutritionNeeds', 'ageInMonths'));
+    }
+
+        // Get the age range based on the child's age in months
+    private function getAgeRange($ageInMonths)
+    {
+        if ($ageInMonths <= 6) {
+            return '0-6 bulan';
+        } elseif ($ageInMonths <= 11) {
+            return '7-11 bulan';
+        } elseif ($ageInMonths <= 36) {
+            return '1-3 tahun';
+        } elseif ($ageInMonths <= 72) {
+            return '4-6 tahun';
+        } elseif ($ageInMonths <= 108) {
+            return '7-9 tahun';
+        }
+        // You can expand age ranges if necessary
+        return '10 tahun ke atas'; 
     }
 
     
