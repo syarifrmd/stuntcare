@@ -3,16 +3,17 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DokterController;
 use App\Http\Controllers\ArtikelController;
+use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChildrenController;
 use App\Http\Controllers\PemantauanController;
 use App\Http\Controllers\DailyIntakeController;
 use App\Http\Controllers\LihatProfilController;
-use App\Http\Controllers\HistoriController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KonsultasiDokterController;
-use App\Http\Controllers\DokterController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 // Halaman Welcome (public)
 Route::get('/', function () {
     return view('welcome');
@@ -100,5 +101,15 @@ Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFo
 
 
 Route::resource('lihatprofile', LihatProfilController::class);
+
+
+// Route::get('/verify-otp/{id}', [RegisteredUserController::class, 'showOtpForm'])->name('verify.otp.form');
+// Route::post('/verify-otp/{id}', [RegisteredUserController::class, 'verifyOtp'])->name('verify.otp');
+// Route::get('/verify-otp/{user}', [RegisteredUserController::class, 'showForm'])->name('verify.otp');
+// Route::post('/verify-otp/{user}', [RegisteredUserController::class, 'verify']);
+
+Route::get('/verify-otp', [RegisteredUserController::class, 'showOtpForm'])->name('verify.otp.form');
+Route::post('/verify-otp', [RegisteredUserController::class, 'verifyOtp'])->name('verify.otp');
+
 
 
