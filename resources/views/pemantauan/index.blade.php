@@ -44,6 +44,38 @@
             <p class="mt-4 text-gray-600">Belum ada data pemantauan hari ini.</p>
           @endif
 
+        <!-- Nutritional Needs Table Section -->
+        <div class="w-full md:w-1/3 bg-pink-50 rounded-2xl p-6 mt-6 md:mt-0">
+            <h3 class="text-xl font-semibold text-pink-500 mb-4">Kebutuhan Gizi Anak (Usia: {{ $ageInMonths }} Bulan)</h3>
+            <table class="min-w-full table-auto">
+                <thead class="bg-pink-500 text-white">
+                    <tr>
+                        <th class="px-4 py-2">Kategori</th>
+                        <th class="px-4 py-2">Kebutuhan (g / kcal)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-pink-100">
+                        <td class="px-4 py-2">Energi</td>
+                        <td class="px-4 py-2">{{ $nutritionNeeds->energy }} kcal</td>
+                    </tr>
+                    <tr class="bg-white">
+                        <td class="px-4 py-2">Protein</td>
+                        <td class="px-4 py-2">{{ $nutritionNeeds->protein }} g</td>
+                    </tr>
+                    <tr class="bg-pink-100">
+                        <td class="px-4 py-2">Lemak</td>
+                        <td class="px-4 py-2">{{ $nutritionNeeds->fat }} g</td>
+                    </tr>
+                    <tr class="bg-white">
+                        <td class="px-4 py-2">Karbohidrat</td>
+                        <td class="px-4 py-2">{{ $nutritionNeeds->carbohydrate }} g</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
           <!-- Tombol Histori -->
           <div class="flex justify-center mt-10">
             <a href="{{ route('histori.index') }}" class="px-6 py-2 bg-pink-500 text-white rounded">Histori</a>

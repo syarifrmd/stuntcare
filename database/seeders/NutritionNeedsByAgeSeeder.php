@@ -11,43 +11,43 @@ class NutritionNeedsByAgeSeeder extends Seeder
     {
         // Menambahkan data kebutuhan gizi berdasarkan rentang usia
         NutritionNeedsByAge::create([
-            'age_range' => '0-1 tahun',
-            'energy' => 1000, // total energi dalam kkal
-            'protein' => 11, // total protein dalam gram
-            'fat' => 30, // total lemak dalam gram
-            'carbohydrate' => 130, // total karbohidrat dalam gram
+            'age_range' => '0-6 bulan',
+            'energy' => 550, // total energi dalam kkal
+            'protein' => 12, // total protein dalam gram
+            'fat' => 34, // total lemak dalam gram
+            'carbohydrate' => 58,
+        ]);
+
+        NutritionNeedsByAge::create([
+            'age_range' => '7-11 bulan',
+            'energy' => 725,
+            'protein' => 18,
+            'fat' => 36,
+            'carbohydrate' => 82,
         ]);
 
         NutritionNeedsByAge::create([
             'age_range' => '1-3 tahun',
-            'energy' => 1300,
-            'protein' => 13,
-            'fat' => 35,
-            'carbohydrate' => 175,
+            'energy' => 1125,
+            'protein' => 26,
+            'fat' => 44,
+            'carbohydrate' => 155,
         ]);
 
         NutritionNeedsByAge::create([
             'age_range' => '4-6 tahun',
-            'energy' => 1800,
-            'protein' => 16,
-            'fat' => 40,
-            'carbohydrate' => 210,
+            'energy' => 1600,
+            'protein' => 35,
+            'fat' => 62,
+            'carbohydrate' => 220,
         ]);
 
         NutritionNeedsByAge::create([
             'age_range' => '7-9 tahun',
-            'energy' => 2000,
-            'protein' => 20,
-            'fat' => 50,
-            'carbohydrate' => 250,
-        ]);
-
-        NutritionNeedsByAge::create([
-            'age_range' => '10-12 tahun',
-            'energy' => 2200,
-            'protein' => 25,
-            'fat' => 60,
-            'carbohydrate' => 270,
+            'energy' => 1850,
+            'protein' => 49,
+            'fat' => 72,
+            'carbohydrate' => 254,
         ]);
 
         // Kamu bisa menambahkan rentang usia lainnya sesuai kebutuhan
