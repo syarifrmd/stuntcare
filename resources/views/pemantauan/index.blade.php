@@ -179,7 +179,7 @@
 
     <!-- Tombol Histori -->
     <div class="flex justify-center mt-6">
-      <a href="{{ route('histori.index', $child->id) }}" class="px-6 py-2 bg-pink-500 text-white rounded">Lihat Histori</a>
+      <a href="{{ route('histori.index', ['child_id' => $child->id]) }}" class="px-6 py-2 bg-pink-500 text-white rounded">Lihat Histori</a>
     </div>
 
     <!-- Daftar Makanan -->
