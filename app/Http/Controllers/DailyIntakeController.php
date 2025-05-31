@@ -18,24 +18,24 @@ class DailyIntakeController extends Controller
         // Validasi input
         $request->validate([
             'food_id' => 'required|exists:foods,id',
-            'child_id' => 'nullable|exists:children,id',
+            'child_id' => 'required|exists:children,id',
             'time_of_day' => 'required|in:Pagi,Siang,Malam,Cemilan',
         ]);
 
         // Simpan intake makanan
         $intake = DailyIntake::create([
-            'id' => Auth::id(),
             'food_id' => $request->food_id,
-            'child_id' => $request->child_id ?? null,
+            'child_id' => $request->child_id,
             'time_of_day' => $request->time_of_day,
-            'portion' => 1,
+            'portion' => 1,  // Default portion
             'date' => now()->toDateString(),
         ]);
 
         // Hitung gizi harian setelah data intake disimpan
         $this->updateDailyNutritionSummary($intake->child_id);
 
-        return redirect()->back()->with('success', 'Makanan berhasil ditambahkan ke konsumsi harian.');
+        // Redirect dengan pesan sukses
+        return response()->json(['success' => true, 'message' => 'Makanan berhasil ditambahkan ke konsumsi harian.']);
     }
 
     public function updateDailyNutritionSummary($childId)
@@ -49,7 +49,8 @@ class DailyIntakeController extends Controller
         $kebutuhan = NutritionNeedsByAge::whereRaw('? BETWEEN SUBSTRING_INDEX(age_range, "-", 1) + 0 AND SUBSTRING_INDEX(age_range, "-", -1) + 0', [$umur])->first();
 
         if (!$kebutuhan) {
-            return response()->json(['message' => 'Kebutuhan gizi tidak ditemukan untuk umur tersebut'], 404);
+            // Jika tidak ditemukan kebutuhan gizi untuk umur tersebut
+            return response()->json(['success' => false, 'message' => 'Kebutuhan gizi tidak ditemukan untuk umur tersebut'], 404);
         }
 
         // Ambil semua intake untuk anak dan hari ini
