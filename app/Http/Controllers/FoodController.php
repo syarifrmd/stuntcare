@@ -46,18 +46,33 @@ class FoodController extends Controller
     // Menyimpan data makanan ke database
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name'         => 'required',
             'category'     => 'required',
-            'energy'       => 'numeric',
-            'protein'      => 'numeric',
-            'fat'          => 'numeric',
-            'carbohydrate' => 'numeric',
+            'energy'       => 'required|numeric',
+            'protein'      => 'required|numeric',
+            'fat'          => 'required|numeric',
+            'carbohydrate' => 'required|numeric',
+            'created_by' => 'nullable|exists:users,id',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('makanan', 'public');
+            $validated['foto'] = $path;
+        }
 
-        Food::create($request->all());
+       Food::create($validated);
 
-            return redirect()->route('food.index', ['child_id' => $request->child_id])
-                 ->with('success', 'Data berhasil disimpan!');
-    }
+        return redirect()->route('food.index', ['child_id' => $request->child_id])
+            ->with('success', 'Data berhasil disimpan!');
+        }
+    
+        public function destroy($id)
+    {
+        $food = Food::findOrFail($id);
+        $food->delete();
+
+        return back()->with('success', 'Makanan berhasil dihapus.');
+}
+
 }

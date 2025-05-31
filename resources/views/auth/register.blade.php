@@ -15,7 +15,7 @@
 
                 <!-- Gambar untuk Mobile -->
                 <div class="mb-6 block lg:hidden">
-                    <img src="{{ asset('images/dokteranak.png') }}" alt="Gambar Register" class="w-48 h-auto mx-auto">
+                    <img src="{{ asset('images/dokterlaptop.png') }}" alt="Gambar Register" class="w-48 h-auto mx-auto">
                 </div>
 
                 <form method="POST" action="{{ route('register') }}">
@@ -66,7 +66,7 @@
 
         <!-- Right Column: Gambar untuk Desktop -->
         <div class="hidden lg:flex justify-center items-center bg-center bg-no-repeat bg-white order-1 lg:order-2"
-             style="background-image: url('{{ asset('images/dokteranak.png') }}'); background-size: contain;">
+             style="background-image: url('{{ asset('images/dokterlaptop.png') }}'); background-size: contain;">
         </div>
     </div>
 </body>

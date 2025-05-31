@@ -36,6 +36,7 @@
     <div class="bg-white shadow-sm">
         <x-app-layout>
             <span name="header"></span>
+            <div x-data="{ showConfirmModal: false, selectedFoodId: null, selectedTime: 'Pagi' }">
             
             <!-- Header Section -->
             <div class="container mx-auto px-4 py-4">
@@ -48,6 +49,7 @@
                     <h1 class="font-semibold text-xl sm:text-2xl">Tambah Makanan</h1>
                 </div>
 
+                 {{-- <p class="text-lg sm:text-base font-medium text-pink-600 mb-4 sm:mb-2">Silakan tambahkan makanan sesuai kebutuhan Anda dengan menekan tombol 'Tambah Makanan' di bawah ini</p> --}}
                 <!-- Controls Section -->
                 <div x-data="{ open: false }" class="space-y-4">
                     <!-- Add Food Button and Search/Filter Row -->
@@ -119,7 +121,7 @@
                             </div>
 
                             <!-- Modal Content -->
-                            <form action="{{ route('food.store') }}" method="POST" class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                            <form action="{{ route('food.store') }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                                 @csrf
                                 <input type="hidden" name="created_by" value="{{ Auth::id() }}">
                                 <input type="hidden" name="child_id" value="{{ $child->id }}">
@@ -145,13 +147,18 @@
                                 <!-- Nutrition Inputs -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <input type="number" name="energy" placeholder="Energi (kkal)" 
-                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom">
+                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom" required>
                                     <input type="number" name="protein" placeholder="Protein (g)" 
-                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom">
+                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom" required>
                                     <input type="number" name="fat" placeholder="Lemak (g)" 
-                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom">
+                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom" required>
                                     <input type="number" name="carbohydrate" placeholder="Karbohidrat (g)" 
-                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom">
+                                        class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom" required>
+                                </div>
+
+                                <div>
+                                    <label for="foto" class="block text-sm font-medium text-gray-700">Foto Makanan (opsional)</label>
+                                    <input type="file" name="foto" id="foto" accept="image/*" class="mt-1 p-2 w-full border border-gray-300 rounded">
                                 </div>
 
                                 <!-- Action Buttons -->
@@ -173,7 +180,10 @@
 
                 <!-- Food List Section -->
     <div class="container mx-auto px-4 py-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-pink-600 mb-4 sm:mb-6">Daftar Makanan</h2>
+        <h2 class="text-lg sm:text-xl font-semibold text-pink-600 mb-4 sm:mb-2">Daftar Makanan</h2>
+            <p class="text-lg sm:text-base font-medium text-pink-600 mb-4 sm:mb-6">Silakan tambahkan makanan sesuai kebutuhan Anda dengan menekan tombol <b>Tambah ke Menu </b> di bawah ini. Jika makanan yang Anda cari belum tersedia, silakan tambahkan melalui menu <b>Tambah Makanan</b> di atas</p>
+
+        
         
         <!-- Food Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -206,22 +216,74 @@
                         </div>
                         
                         <!-- Add to Menu Form -->
-                        <form action="{{ route('intakes.storeDirect') }}" method="POST" class="space-y-2 sm:space-y-3">
+                       <!-- Add & Delete Buttons -->
+                    {{-- <div class="flex flex-col space-y-2 sm:space-y-3">
+                        <!-- Form Tambah ke Menu -->
+                        <form action="{{ route('intakes.storeDirect') }}" method="POST">
                             @csrf
-                            <input type="hidden" name="food_id" value="{{ $food->id }}">
-                            <input type="hidden" name="child_id" value="{{ $child->id}}">
-                            
-                            <select name="time_of_day" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-custom">
-                                <option value="Pagi">Pagi</option>
-                                <option value="Siang">Siang</option>
-                                <option value="Malam">Malam</option>
-                                <option value="Cemilan">Cemilan</option>
-                            </select>
-                            
-                            <button type="submit" class="w-full bg-pink-500 text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-pink-600 transition-custom">
+                            <input type="hidden" name="food_id" :value="{{ $food->id }}">
+                            <input type="hidden" name="child_id" value="{{ $child->id }}">
+                            <input type="hidden" name="time_of_day" x-model="selectedTime">
+
+                            <button 
+                                type="button"
+                                @click.prevent="
+                                    selectedFoodId = {{ $food->id }};
+                                    selectedTime = $event.target.closest('form').querySelector('[name=time_of_day]')?.value ?? 'Pagi';
+                                    showConfirmModal = true
+                                "
+                                class="w-full bg-pink-500 text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-pink-600 transition-custom">
                                 + Tambah ke Menu
                             </button>
                         </form>
+
+                        <!-- Form Hapus -->
+                        <form action="{{ route('food.destroy', $food->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus makanan ini?')" class="text-right">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-500 hover:text-red-700 p-1 rounded-full bg-red-50 hover:bg-red-100 transition">
+                                <!-- Trash Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div> --}}
+                    <!-- Add & Delete Buttons -->
+            <div class="flex items-center gap-2">
+                <!-- Tombol Hapus -->
+                <form action="{{ route('food.destroy', $food->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus makanan ini?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="text-red-500 hover:text-red-700 p-2 rounded-full bg-red-50 hover:bg-red-100 transition" title="Hapus">
+                        <!-- Trash Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- Tombol Tambah ke Menu -->
+                <form action="{{ route('intakes.storeDirect') }}" method="POST" class="flex-1">
+                    @csrf
+                    <input type="hidden" name="food_id" value="{{ $food->id }}">
+                    <input type="hidden" name="child_id" value="{{ $child->id }}">
+                    <input type="hidden" name="time_of_day" x-model="selectedTime">
+
+                    <button 
+                        type="button"
+                        @click.prevent="
+                            selectedFoodId = {{ $food->id }};
+                            selectedTime = $event.target.closest('form').querySelector('[name=time_of_day]')?.value ?? 'Pagi';
+                            showConfirmModal = true
+                        "
+                        class="w-full bg-pink-500 text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-pink-600 transition-custom">
+                        + Tambah ke Menu
+                    </button>
+                </form>
+            </div>
+
+
                     </div>
                 </div>
                 @endforeach
@@ -242,9 +304,52 @@
         </div>
     </div>
 
+     <!-- Modal Konfirmasi -->
+    <div 
+        x-show="showConfirmModal"
+        x-transition
+       class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4"
+        style="display: none;"
+    >
+        <div @click.away="showConfirmModal = false" 
+             class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Tambah Makanan</h2>
+            <p class="text-sm text-gray-600 mb-4">Apakah Anda yakin ingin menambahkan makanan ini ke menu anak?</p>
+
+            <form :action="`{{ route('intakes.storeDirect') }}`" method="POST">
+                @csrf
+                <input type="hidden" name="food_id" :value="selectedFoodId">
+                <input type="hidden" name="child_id" value="{{ $child->id }}">
+
+                <select name="time_of_day" x-model="selectedTime"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+                    <option value="Pagi">Pagi</option>
+                    <option value="Siang">Siang</option>
+                    <option value="Malam">Malam</option>
+                    <option value="Cemilan">Cemilan</option>
+                </select>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" @click="showConfirmModal = false"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600">Ya, Tambahkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
     <!-- Bottom Spacing -->
     <div class="h-16"></div>
     </x-app-layout>
+    @if (session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            confirm("{{ session('success') }}");
+        });
+    </script>
+@endif
     </div>
 
 

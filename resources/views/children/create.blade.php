@@ -13,6 +13,7 @@
       <div class="bg-white">
       <div class=" bg-white max-w-screen-xl mx-auto relative overflow-hidden py-10">
          <h2 class="text-2xl px-6 py-2 font-semibold text-pink-600 ">Data Anak Anda</h2>
+         <p class="text-base px-6 py-2 font-medium text-pink-600 mb-6">Silakan tambahkan data anak Anda terlebih dahulu, lalu inputkan informasi makanan melalui fitur pemantauan dengan menekan tombol <b>Input Makanan</b></p>
       <div x-data="{ open: false }" class="px-6 py-2 "> <!-- Tombol buka modal --> <button @click="open = true" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition"> + Tambah Data Anak </button>
       <!-- Modal -->
       <div x-show="open" x-transition class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

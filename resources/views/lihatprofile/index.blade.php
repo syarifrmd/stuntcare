@@ -27,20 +27,20 @@
 
             <aside class="w-full lg:w-64 lg:mt-10 mb-6 lg:mb-0 flex-shrink-0">
                 <div class="bg-pink-500 rounded-t-[30px] p-4 sm:p-6 mb-2">
-                    <a href="lihatprofile" class="block mb-3 text-white text-sm sm:text-base font-medium font-montserrat hover:text-pink-500 transition-colors py-2">Personal</a>
+                    <a href="lihatprofile" class="block mb-3 text-gray-100 text-sm sm:text-base font-medium font-montserrat hover:text-white transition-colors py-2">Personal</a>
                     <nav class="space-y-2 sm:space-y-3">
-                        <a href="{{ route('children.create') ?? '#' }}" class="block text-white text-sm sm:text-base font-medium font-montserrat hover:text-pink-500 transition-colors py-1 sm:py-2">Edit data anak</a>
+                        <a href="{{ route('children.create') ?? '#' }}" class="block text-gray-100 text-sm sm:text-base font-medium font-montserrat  hover:text-white transition-colors py-1 sm:py-2">Edit data anak</a>
                         {{-- <a href="#" class="block text-white text-base font-medium font-montserrat hover:text-pink-500 transition-colors">Pengaturan</a> --}}
                     </nav>
                 </div>
                 <div class="bg-pink-500 rounded-b-[30px] p-4 sm:p-6">
                     <nav class="space-y-2 sm:space-y-3">
-                        <a href="#" class="block text-white text-sm sm:text-base font-medium font-montserrat hover:text-pink-500 transition-colors py-1 sm:py-2">Account</a>
+                        <a href="#" class="block text-gray-100 text-sm sm:text-base font-medium font-montserrat  hover:text-white transition-colors py-1 sm:py-2">Account</a>
                         <form method="POST" action="{{ route('logout') ?? '#' }}">
                             @csrf
                             <a href="{{ route('logout') ?? '#' }}"
                                onclick="event.preventDefault(); this.closest('form').submit();"
-                               class="block text-white text-sm sm:text-base font-medium font-montserrat hover:text-pink-500 transition-colors py-1 sm:py-2">
+                               class="block text-white text-sm sm:text-base font-medium font-montserrat  hover:text-white transition-colors py-1 sm:py-2">
                                 Log Out
                             </a>
                         </form>
