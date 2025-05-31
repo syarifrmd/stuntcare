@@ -179,49 +179,101 @@
 
     <!-- Tombol Histori -->
     <div class="flex justify-center mt-6">
-      <a href="{{ route('histori.index', ['child_id' => $child->id]) }}" class="px-6 py-2 bg-pink-500 text-white rounded">Lihat Histori</a>
+      <a href="{{ route('histori.index', ['child_id' => $child->id]) }}" class="px-6 py-2 bg-pink-500 text-white rounded mb-4">Lihat Histori</a>
     </div>
 
     <!-- Daftar Makanan -->
-    @if(isset($foods))
-      <div class="mt-8">
         <h2 class="text-pink-500 text-2xl font-semibold">Daftar Makanan</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-4 gap-6">
-          @foreach($foods as $food)
-            <div class="bg-pink-50 rounded-lg shadow p-4 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-102">
-              <h3 class="text-lg font-semibold text-rose-900 mb-2">{{ $food->name }}</h3>
-              <div class="w-full h-32 rounded-2xl mb-2 overflow-hidden"> 
-                @if ($food->foto) 
-                  <img src="{{ asset('storage/' . $food->foto) }}" alt="{{ $food->name }}" class="w-full h-full object-cover rounded-4xl"> 
-                @else 
-                  <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-sm"> Tidak ada gambar </div>
-                @endif 
-              </div>
-              <!-- Nutrition Info -->
-              <div class="grid grid-cols-2 gap-1 sm:gap-2 text-sm text-gray-600 mb-4">
-                <div>Energi: {{ $food->energy }} kkal</div>
-                <div>Protein: {{ $food->protein }} g</div>
-                <div>Lemak: {{ $food->fat }} g</div>
-                <div>Karbohidrat: {{ $food->carbohydrate }} g</div>
-              </div>
-
-              <form class="food-form mt-2" data-food-name="{{ $food->name }}">
-                @csrf
-                <input type="hidden" name="food_id" value="{{ $food->id }}">
-                <input type="hidden" name="child_id" value="{{ $child->id ?? '' }}">
-                <select name="time_of_day" class="border px-2 py-1 rounded text-sm w-full mb-2 time-select">
-                  <option value="Pagi">Pagi</option>
-                  <option value="Siang">Siang</option>
-                  <option value="Malam">Malam</option>
-                  <option value="Cemilan">Cemilan</option>
-                </select>
-                <button type="button" class="add-food-btn bg-pink-500 text-white text-sm px-3 py-1 rounded hover:bg-pink-600 w-full transition-colors duration-200">+ Tambah</button>
-              </form>
+        <div x-data="{ showConfirmModal: false, selectedFoodId: null, selectedTime: 'Pagi' }">
+  <!-- Food Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-4">
+    @foreach($foods as $food)
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden food-card transition-custom">
+        <!-- Food Image -->
+        <div class="w-full h-32 sm:h-40 overflow-hidden">
+          @if ($food->foto)
+            <img src="{{ asset('storage/' . $food->foto) }}" alt="{{ $food->name }}" class="w-full h-full object-cover">
+          @else
+            <div class="w-full h-full flex items-center justify-center bg-pink-200 text-pink-400 text-sm">
+              Tidak ada gambar
             </div>
-          @endforeach
+          @endif
+        </div>
+
+        <!-- Food Info -->
+        <div class="p-4">
+          <h3 class="text-sm sm:text-base font-semibold text-rose-900 mb-1">{{ $food->name }}</h3>
+          <p class="text-xs text-gray-600 mb-2">Kategori: {{ $food->category }}</p>
+          <div class="grid grid-cols-2 gap-1 text-xs text-gray-600 mb-4">
+            <div>Energi: {{ $food->energy }} kkal</div>
+            <div>Protein: {{ $food->protein }} g</div>
+            <div>Lemak: {{ $food->fat }} g</div>
+            <div>Karbohidrat: {{ $food->carbohydrate }} g</div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex items-center gap-2">
+            <!-- Delete -->
+            <form action="{{ route('food.destroy', $food->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus makanan ini?')">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="text-red-500 hover:text-red-700 p-2 rounded-full bg-red-50 hover:bg-red-100 transition" title="Hapus">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 
+                    0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+                </svg>
+              </button>
+            </form>
+
+            <!-- Tambah ke Menu -->
+            <button
+              @click="selectedFoodId = {{ $food->id }}; showConfirmModal = true"
+              class="flex-1 bg-pink-500 text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-pink-600 transition-custom"
+            >
+              + Tambah ke Menu
+            </button>
+          </div>
         </div>
       </div>
-    @endif
+    @endforeach
+  </div>
+
+  <!-- Modal Konfirmasi -->
+  <div 
+    x-show="showConfirmModal"
+    x-transition
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4"
+    style="display: none;"
+  >
+    <div @click.away="showConfirmModal = false" class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Tambah Makanan</h2>
+      <p class="text-sm text-gray-600 mb-4">Yakin ingin menambahkan makanan ini ke menu anak?</p>
+
+      <form method="POST" action="{{ route('intakes.storeDirect') }}">
+        @csrf
+        <input type="hidden" name="food_id" :value="selectedFoodId">
+        <input type="hidden" name="child_id" value="{{ $child->id }}">
+        <select name="time_of_day" x-model="selectedTime"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+          <option value="Pagi">Pagi</option>
+          <option value="Siang">Siang</option>
+          <option value="Malam">Malam</option>
+          <option value="Cemilan">Cemilan</option>
+        </select>
+
+        <div class="flex justify-end gap-3">
+          <button type="button" @click="showConfirmModal = false"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Batal</button>
+          <button type="submit"
+            class="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600">Ya, Tambahkan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+    
 
     <!-- Tombol Tambah Makanan -->
     <div class="flex justify-center mt-10">
@@ -229,32 +281,7 @@
     </div>
 </div>
 
-<!-- Modal Konfirmasi -->
-<div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop z-50 flex items-center justify-center hidden">
-  <div class="bg-white rounded-2xl p-6 max-w-md mx-4 modal-content">
-    <div class="text-center">
-      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-pink-100 mb-4">
-        <i class="fa fa-question-circle text-pink-500 text-2xl"></i>
-      </div>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Konfirmasi Penambahan</h3>
-      <p class="text-sm text-gray-600 mb-6">
-        Yakin ingin menambahkan <span id="modalFoodName" class="font-semibold text-pink-600"></span> 
-        di waktu <span id="modalTimeOfDay" class="font-semibold text-pink-600"></span>?
-      </p>
-      <div class="flex space-x-3">
-        <button id="cancelBtn" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors duration-200">
-          Batal
-        </button>
-        <button id="confirmBtn" class="flex-1 bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors duration-200">
-          <span class="confirm-text">Ya, Tambahkan</span>
-          <span class="loading-text hidden">
-            <i class="fa fa-spinner loading-spinner mr-1"></i>Menambah...
-          </span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <!-- Notifikasi Berhasil -->
 <div id="successNotification" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden">

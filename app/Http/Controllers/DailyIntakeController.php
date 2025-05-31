@@ -35,7 +35,7 @@ class DailyIntakeController extends Controller
         $this->updateDailyNutritionSummary($intake->child_id);
 
         // Redirect dengan pesan sukses
-        return response()->json(['success' => true, 'message' => 'Makanan berhasil ditambahkan ke konsumsi harian.']);
+        return redirect()->back()->with('success', 'Makanan berhasil ditambahkan ke konsumsi harian.');
     }
 
     public function updateDailyNutritionSummary($childId)
