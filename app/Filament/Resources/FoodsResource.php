@@ -17,7 +17,7 @@ class FoodsResource extends Resource
     protected static ?string $model = Food::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
-    protected static ?string $navigationGroup = 'Master Data';
+    protected static ?string $navigationGroup = 'Pusat Data';
     protected static ?string $label = 'Makanan';
     protected static ?string $pluralLabel = 'Daftar Makanan';
 

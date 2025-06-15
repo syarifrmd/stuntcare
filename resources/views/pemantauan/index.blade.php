@@ -6,15 +6,18 @@
   <title>Pemantauan Gizi - StuntCare</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
+    [x-cloak] { display: none !important; }
     .modal-backdrop {
       backdrop-filter: blur(4px);
     }
     .modal-enter {
-      animation: modalEnter 0.3s ease-out;
+      animation: modalEnter 0.1s ease-out;
     }
     .modal-exit {
-      animation: modalExit 0.3s ease-in;
+      animation: modalExit 0.1s ease-in;
     }
     @keyframes modalEnter {
       from {
@@ -69,9 +72,12 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    .transition-custom {
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
-<body class="bg-white">
+<body class="bg-white pb-20">
 
 <x-app-layout>
 <span name="header"></span>
@@ -183,97 +189,184 @@
     </div>
 
     <!-- Daftar Makanan -->
-        <h2 class="text-pink-500 text-2xl font-semibold">Daftar Makanan</h2>
-        <div x-data="{ showConfirmModal: false, selectedFoodId: null, selectedTime: 'Pagi' }">
-  <!-- Food Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-4">
-    @foreach($foods as $food)
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden food-card transition-custom">
-        <!-- Food Image -->
-        <div class="w-full h-32 sm:h-40 overflow-hidden">
-          @if ($food->foto)
-            <img src="{{ asset('storage/' . $food->foto) }}" alt="{{ $food->name }}" class="w-full h-full object-cover">
-          @else
-            <div class="w-full h-full flex items-center justify-center bg-pink-200 text-pink-400 text-sm">
-              Tidak ada gambar
+    <h2 class="text-pink-500 text-2xl font-semibold">Daftar Makanan</h2>
+    <div x-data="{ 
+      showConfirmModal: false, 
+      selectedFoodId: null, 
+      selectedTime: 'Pagi', 
+      selectedFoodName: '', 
+      showDeleteModal: false, 
+      deleteFormAction: '',
+      openAddModal(foodId, foodName) {
+        console.log('Opening modal for:', foodName);
+        this.selectedFoodId = foodId;
+        this.selectedFoodName = foodName;
+        this.showConfirmModal = true;
+      },
+      openDeleteModal(action) {
+        console.log('Opening delete modal');
+        this.deleteFormAction = action;
+        this.showDeleteModal = true;
+      }
+    }">
+      <!-- Food Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-4">
+        @foreach($foods as $food)
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden food-card transition-custom">
+            <!-- Food Image -->
+            <div class="w-full h-32 sm:h-40 overflow-hidden">
+              @if ($food->foto)
+                <img src="{{ asset('storage/' . $food->foto) }}" alt="{{ $food->name }}" class="w-full h-full object-cover">
+              @else
+                <div class="w-full h-full flex items-center justify-center bg-pink-200 text-pink-400 text-sm">
+                  Tidak ada gambar
+                </div>
+              @endif
             </div>
-          @endif
-        </div>
 
-        <!-- Food Info -->
-        <div class="p-4">
-          <h3 class="text-sm sm:text-base font-semibold text-rose-900 mb-1">{{ $food->name }}</h3>
-          <p class="text-xs text-gray-600 mb-2">Kategori: {{ $food->category }}</p>
-          <div class="grid grid-cols-2 gap-1 text-xs text-gray-600 mb-4">
-            <div>Energi: {{ $food->energy }} kkal</div>
-            <div>Protein: {{ $food->protein }} g</div>
-            <div>Lemak: {{ $food->fat }} g</div>
-            <div>Karbohidrat: {{ $food->carbohydrate }} g</div>
+            <!-- Food Info -->
+            <div class="p-4">
+              <h3 class="text-sm sm:text-base font-semibold text-rose-900 mb-1">{{ $food->name }}</h3>
+              <p class="text-xs text-gray-600 mb-2">Kategori: {{ $food->category }}</p>
+              <div class="grid grid-cols-2 gap-1 text-xs text-gray-600 mb-4">
+                <div>Energi: {{ $food->energy }} kkal</div>
+                <div>Protein: {{ $food->protein }} g</div>
+                <div>Lemak: {{ $food->fat }} g</div>
+                <div>Karbohidrat: {{ $food->carbohydrate }} g</div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="flex items-center gap-2">
+                <!-- Delete Button -->
+                <button 
+                  @click="openDeleteModal('{{ route('food.destroy', $food->id) }}')"
+                  class="text-red-500 hover:text-red-700 p-2 rounded-full bg-red-50 hover:bg-red-100 transition" 
+                  title="Hapus"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 
+                      0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+                  </svg>
+                </button>
+
+                <!-- Tambah ke Menu -->
+                <button
+                  @click="openAddModal({{ $food->id }}, '{{ $food->name }}')"
+                  class="flex-1 bg-pink-500 text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-pink-600 transition-custom"
+                >
+                  + Tambah ke Menu
+                </button>
+              </div>
+
+              <!-- Hidden form for JavaScript compatibility -->
+              <form class="food-form hidden" data-food-name="{{ $food->name }}" method="POST" action="{{ route('intakes.storeDirect') }}">
+                @csrf
+                <input type="hidden" name="food_id" value="{{ $food->id }}">
+                <input type="hidden" name="child_id" value="{{ $child->id }}">
+                <select name="time_of_day" class="time-select">
+                  <option value="Pagi">Pagi</option>
+                  <option value="Siang">Siang</option>
+                  <option value="Malam">Malam</option>
+                  <option value="Cemilan">Cemilan</option>
+                </select>
+              </form>
+            </div>
           </div>
+        @endforeach
+      </div>
 
-          <!-- Buttons -->
-          <div class="flex items-center gap-2">
-            <!-- Delete -->
-            <form action="{{ route('food.destroy', $food->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus makanan ini?')">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="text-red-500 hover:text-red-700 p-2 rounded-full bg-red-50 hover:bg-red-100 transition" title="Hapus">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 
-                    0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
-                </svg>
-              </button>
-            </form>
+      <!-- Modal Konfirmasi Tambah Makanan (Alpine.js) -->
+      <div 
+        x-show="showConfirmModal"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-90"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-90"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4 modal-backdrop"
+        @click="showConfirmModal = false"
+      >
+        <div @click.stop class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+          <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Tambah Makanan</h2>
+          <p class="text-sm text-gray-600 mb-2">Yakin ingin menambahkan <strong x-text="selectedFoodName"></strong> ke menu anak?</p>
+          <p class="text-xs text-gray-500 mb-4">Pilih waktu makan:</p>
 
-            <!-- Tambah ke Menu -->
-            <button
-              @click="selectedFoodId = {{ $food->id }}; showConfirmModal = true"
-              class="flex-1 bg-pink-500 text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-pink-600 transition-custom"
-            >
-              + Tambah ke Menu
-            </button>
-          </div>
+          <form method="POST" action="{{ route('intakes.storeDirect') }}">
+            @csrf
+            <input type="hidden" name="food_id" :value="selectedFoodId">
+            <input type="hidden" name="child_id" value="{{ $child->id }}">
+            <select name="time_of_day" x-model="selectedTime"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+              <option value="Pagi">Pagi</option>
+              <option value="Siang">Siang</option>
+              <option value="Malam">Malam</option>
+              <option value="Cemilan">Cemilan</option>
+            </select>
+
+            <div class="flex justify-end gap-3">
+              <button type="button" @click="showConfirmModal = false"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Batal</button>
+              <button type="submit"
+                class="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600 transition">Ya, Tambahkan</button>
+            </div>
+          </form>
         </div>
       </div>
-    @endforeach
-  </div>
 
-  <!-- Modal Konfirmasi -->
-  <div 
-    x-show="showConfirmModal"
-    x-transition
-    class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4"
-    style="display: none;"
-  >
-    <div @click.away="showConfirmModal = false" class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-      <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Tambah Makanan</h2>
-      <p class="text-sm text-gray-600 mb-4">Yakin ingin menambahkan makanan ini ke menu anak?</p>
+      <!-- Modal Konfirmasi Hapus -->
+      <div 
+        x-show="showDeleteModal"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-90"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-90"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4 modal-backdrop"
+        @click="showDeleteModal = false"
+      >
+        <div @click.stop class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+          <h2 class="text-lg font-semibold text-red-600 mb-2">Konfirmasi Hapus</h2>
+          <p class="text-sm text-gray-600 mb-4">Yakin ingin menghapus makanan ini? Tindakan ini tidak dapat dibatalkan.</p>
 
-      <form method="POST" action="{{ route('intakes.storeDirect') }}">
-        @csrf
-        <input type="hidden" name="food_id" :value="selectedFoodId">
-        <input type="hidden" name="child_id" value="{{ $child->id }}">
-        <select name="time_of_day" x-model="selectedTime"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
-          <option value="Pagi">Pagi</option>
-          <option value="Siang">Siang</option>
-          <option value="Malam">Malam</option>
-          <option value="Cemilan">Cemilan</option>
-        </select>
-
-        <div class="flex justify-end gap-3">
-          <button type="button" @click="showConfirmModal = false"
-            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Batal</button>
-          <button type="submit"
-            class="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600">Ya, Tambahkan</button>
+          <form :action="deleteFormAction" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="flex justify-end gap-3">
+              <button type="button" @click="showDeleteModal = false"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Batal</button>
+              <button type="submit"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Ya, Hapus</button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
-  </div>
-</div>
 
-    
+    <!-- Modal Konfirmasi untuk JavaScript (fallback) -->
+    <div id="confirmModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4 modal-backdrop hidden">
+      <div class="modal-content bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Tambah Makanan</h2>
+        <p class="text-sm text-gray-600 mb-2">Yakin ingin menambahkan <strong id="modalFoodName"></strong> ke menu anak pada waktu <strong id="modalTimeOfDay"></strong>?</p>
+
+        <div class="flex justify-end gap-3 mt-4">
+          <button type="button" id="cancelBtn"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Batal</button>
+          <button type="button" id="confirmBtn"
+            class="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600 transition">
+            <span class="confirm-text">Ya, Tambahkan</span>
+            <span class="loading-text hidden">
+              <i class="fa fa-spinner loading-spinner mr-2"></i>
+              Menambahkan...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Tombol Tambah Makanan -->
     <div class="flex justify-center mt-10">
@@ -281,13 +374,19 @@
     </div>
 </div>
 
-
-
 <!-- Notifikasi Berhasil -->
 <div id="successNotification" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden">
   <div class="flex items-center">
     <i class="fa fa-check-circle mr-2"></i>
     <span>Makanan berhasil ditambahkan!</span>
+  </div>
+</div>
+
+<!-- Notifikasi Error -->
+<div id="errorNotification" class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden">
+  <div class="flex items-center">
+    <i class="fa fa-exclamation-circle mr-2"></i>
+    <span>Terjadi kesalahan saat memproses permintaan!</span>
   </div>
 </div>
 
@@ -300,6 +399,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize event listeners
     initializeFormHandlers();
     initializeModalHandlers();
+    
+    // Show success message if exists
+    @if(session('success'))
+        showSuccessNotification('{{ session('success') }}');
+    @endif
+    
+    // Show error message if exists
+    @if(session('error') || $errors->any())
+        showErrorNotification('{{ session('error') ?? $errors->first() }}');
+    @endif
 });
 
 function initializeFormHandlers() {
@@ -317,20 +426,24 @@ function initializeModalHandlers() {
     const cancelBtn = document.getElementById('cancelBtn');
     const confirmBtn = document.getElementById('confirmBtn');
 
-    cancelBtn.addEventListener('click', hideConfirmModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', hideConfirmModal);
     
-    confirmBtn.addEventListener('click', function() {
-        if (currentForm) {
-            submitForm();
-        }
-    });
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+            if (currentForm) {
+                submitForm();
+            }
+        });
+    }
 
     // Close modal when clicking backdrop
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            hideConfirmModal();
-        }
-    });
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                hideConfirmModal();
+            }
+        });
+    }
 }
 
 function showConfirmModal() {
@@ -342,8 +455,11 @@ function showConfirmModal() {
     const modalContent = modal.querySelector('.modal-content');
     
     // Update modal content
-    document.getElementById('modalFoodName').textContent = foodName;
-    document.getElementById('modalTimeOfDay').textContent = timeOfDay;
+    const modalFoodName = document.getElementById('modalFoodName');
+    const modalTimeOfDay = document.getElementById('modalTimeOfDay');
+    
+    if (modalFoodName) modalFoodName.textContent = foodName;
+    if (modalTimeOfDay) modalTimeOfDay.textContent = timeOfDay;
     
     // Show modal with animation
     modal.classList.remove('hidden');
@@ -388,39 +504,47 @@ function submitForm() {
         method: 'POST',
         body: formData,
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
         }
     })
     .then(response => response.json())
     .then(data => {
         hideConfirmModal();
         if (data.success) {
-            showSuccessNotification();
+            showSuccessNotification(data.message || 'Makanan berhasil ditambahkan!');
             // Optionally update the page content or refresh
-            location.reload();
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
         } else {
-            alert('Terjadi kesalahan saat menambahkan makanan');
+            showErrorNotification(data.message || 'Terjadi kesalahan saat menambahkan makanan');
         }
     })
     .catch(error => {
         hideConfirmModal();
         console.error('Error:', error);
-        alert('Terjadi kesalahan saat menambahkan makanan');
+        showErrorNotification('Terjadi kesalahan saat menambahkan makanan');
     });
 }
 
 function resetConfirmButton() {
     const confirmBtn = document.getElementById('confirmBtn');
+    if (!confirmBtn) return;
+    
     const confirmText = confirmBtn.querySelector('.confirm-text');
     const loadingText = confirmBtn.querySelector('.loading-text');
     
-    confirmText.classList.remove('hidden');
-    loadingText.classList.add('hidden');
+    if (confirmText) confirmText.classList.remove('hidden');
+    if (loadingText) loadingText.classList.add('hidden');
     confirmBtn.disabled = false;
 }
 
-function showSuccessNotification() {
+function showSuccessNotification(message = 'Operasi berhasil!') {
     const notification = document.getElementById('successNotification');
+    if (!notification) return;
+    
+    const messageSpan = notification.querySelector('span');
+    if (messageSpan) messageSpan.textContent = message;
     
     notification.classList.remove('hidden');
     notification.classList.add('notification-enter');
@@ -437,6 +561,39 @@ function showSuccessNotification() {
 
 function hideSuccessNotification() {
     const notification = document.getElementById('successNotification');
+    if (!notification) return;
+    
+    notification.classList.add('notification-exit');
+    
+    setTimeout(() => {
+        notification.classList.add('hidden');
+        notification.classList.remove('notification-exit');
+    }, 500);
+}
+
+function showErrorNotification(message = 'Terjadi kesalahan!') {
+    const notification = document.getElementById('errorNotification');
+    if (!notification) return;
+    
+    const messageSpan = notification.querySelector('span');
+    if (messageSpan) messageSpan.textContent = message;
+    
+    notification.classList.remove('hidden');
+    notification.classList.add('notification-enter');
+    
+    setTimeout(() => {
+        notification.classList.remove('notification-enter');
+    }, 500);
+    
+    // Auto hide after 4 seconds
+    setTimeout(() => {
+        hideErrorNotification();
+    }, 4000);
+}
+
+function hideErrorNotification() {
+    const notification = document.getElementById('errorNotification');
+    if (!notification) return;
     
     notification.classList.add('notification-exit');
     

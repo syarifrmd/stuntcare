@@ -38,7 +38,7 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-l from-pink-50 to-pink-400/30 text-gray-800">
+<body class="bg-gradient-to-l from-pink-50 to-pink-400/30 text-gray-800 pb-20">
 <x-app-layout>
     <div class="bg-white">
     <span name="header"></span>

@@ -27,7 +27,6 @@
     </style>
 </head>
 <body class="bg-white">
-<x-app-layout>
     <main class="w-full">
         <div class="w-full bg-white pb-8 pt-2">
             <div class="max-w-screen-xl mx-auto px-6">
@@ -92,6 +91,14 @@
                                         @endif
                                     </div>
                                 </div>
+
+                                                                <!-- Slide 4 - Artikel -->
+                                <div class="carousel-item">
+                                    <div class="bg-white p-6 rounded-3xl text-center">
+                                        <h3 class="text-2xl font-semibold text-pink-600 mb-4">Tambahkan Artikel</h3>
+                                        <a href="{{ route('dokter.artikel.index') }}" class="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition">Tambahkan Artikel</a>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Custom Carousel Controls -->
@@ -117,7 +124,6 @@
             </div>
         </div>
     </main>
-</x-app-layout>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 // Typing Animation Script
