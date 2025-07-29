@@ -15,6 +15,8 @@ use App\Http\Controllers\DailyIntakeController;
 use App\Http\Controllers\LihatProfilController;
 use App\Http\Controllers\KonsultasiDokterController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\DokterProfileController;
+
 // Halaman Welcome (public)
 Route::get('/', function () {
     return view('welcome');
@@ -40,12 +42,12 @@ Route::get('/redirect', function () {
 })->middleware(['auth'])->name('dashboard.redirect');
 
 // Route untuk user biasa
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('/user/dashboard', function () {
         return view('user.dashboard');
     })->name('user.dashboard');
 
-     // Menampilkan jadwal konsultasi yang tersedia untuk user
+    // Menampilkan jadwal konsultasi yang tersedia untuk user
     Route::get('/konsultasidokter', [KonsultasiDokterController::class, 'index'])->name('konsultasidokter.index');
     // Menyimpan pemesanan konsultasi oleh user
     Route::post('/konsultasidokter/{id}', [KonsultasiDokterController::class, 'store'])->name('konsultasidokter.store');
@@ -56,9 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
 // Route untuk dokter
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:dokter'])->group(function () {
     // Route untuk dashboard dokter
     Route::get('/dokter', [DokterController::class, 'dashboard'])->name('dokter.dashboard');
     
@@ -83,31 +84,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('dokter/artikel/{artikel}', [ArtikelController::class, 'updateDokter'])->name('dokter.artikel.update');
     Route::delete('dokter/artikel/{artikel}', [ArtikelController::class, 'destroyDokter'])->name('dokter.artikel.destroy');
 
+    // Doctor Profile Routes
+    Route::get('/dokter/profile/edit', [DokterProfileController::class, 'edit'])->name('dokter.profile.edit');
+    Route::put('/dokter/profile/update', [DokterProfileController::class, 'update'])->name('dokter.profile.update');
 });
 
+// Resource controllers dengan middleware role
+Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
+    Route::resource('artikel', ArtikelController::class);
+    Route::resource('food', FoodController::class);
+    Route::resource('pemantauan', PemantauanController::class);
+    Route::resource('children', ChildrenController::class);
+    Route::resource('histori', HistoriController::class);
+    Route::resource('lihatprofile', LihatProfilController::class);
+    
+    // Daily intake tambahan
+    Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
+});
 
+// Route untuk admin (Filament)
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+    Route::get('/admin', function () {
+        return redirect('/admin/dashboard');
+    });
+});
 
 // Auth routes dari Breeze
 require __DIR__.'/auth.php';
-
-// Resource controllers
-Route::resource('artikel', ArtikelController::class);
-Route::resource('food', FoodController::class);
-Route::resource('pemantauan', PemantauanController::class);
-Route::resource('children', ChildrenController::class);
-Route::resource('histori', HistoriController::class);
-
-// Daily intake tambahan
-Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
-
-
-Route::resource('lihatprofile', LihatProfilController::class);
-
-
-// Route::get('/verify-otp/{id}', [RegisteredUserController::class, 'showOtpForm'])->name('verify.otp.form');
-// Route::post('/verify-otp/{id}', [RegisteredUserController::class, 'verifyOtp'])->name('verify.otp');
-// Route::get('/verify-otp/{user}', [RegisteredUserController::class, 'showForm'])->name('verify.otp');
-// Route::post('/verify-otp/{user}', [RegisteredUserController::class, 'verify']);
 
 Route::get('/verify-otp', [RegisteredUserController::class, 'showOtpForm'])->name('verify.otp.form');
 Route::post('/verify-otp', [RegisteredUserController::class, 'verifyOtp'])->name('verify.otp');

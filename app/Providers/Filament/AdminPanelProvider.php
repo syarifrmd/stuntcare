@@ -53,6 +53,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->brandName('StuntCare')
+            ->brandLogo(asset('images/logo.png'))
+            ->favicon(asset('images/favicon.ico'));
     }
 }

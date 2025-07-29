@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StuntCare - Anda Sedang Offline</title>
+
+    <style>
+        /* Mengatur font dasar dari Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        /* === Gaya Dasar === */
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* === Kartu Konten === */
+        .offline-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid #fce7f3;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* === Logo Aplikasi === */
+        .stuntcare-logo {
+            max-width: 80px;
+            margin-bottom: 20px;
+        }
+
+        /* === Ikon Offline (SVG) === */
+        .offline-icon {
+            width: 100px;
+            height: 100px;
+            color: #f9a8d4; /* Warna pink muda untuk ikon */
+            margin: 0 auto 20px auto;
+        }
+
+        /* === Teks Judul dan Paragraf === */
+        .offline-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #be185d; /* Warna pink tua untuk judul */
+            margin-bottom: 10px;
+        }
+
+        .offline-paragraph {
+            color: #6b7280; /* Warna abu-abu untuk teks */
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* === Tombol Aksi === */
+        .reload-button {
+            background-color: #ec4899; /* Warna pink utama */
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .reload-button:hover {
+            background-color: #db2777; /* Warna pink lebih gelap saat hover */
+            transform: translateY(-2px);
+        }
+        
+        /* === Penyesuaian untuk Layar Kecil (Mobile) === */
+        @media (max-width: 540px) {
+            .offline-card {
+                padding: 30px 25px;
+            }
+
+            .offline-title {
+                font-size: 20px;
+            }
+
+            .offline-paragraph {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="offline-card">
+
+    <div class="offline-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+        </svg>
+    </div>
+
+    <h1 class="offline-title">Oops! Koneksi Terputus</h1>
+    <p class="offline-paragraph">
+        StuntCare memerlukan koneksi internet untuk sinkronisasi data terbaru.
+        Silakan periksa jaringan Anda dan coba lagi.
+    </p>
+
+    <button class="reload-button" onclick="window.location.reload()">
+        Coba Lagi
+    </button>
+</div>
+
+</body>
+</html>

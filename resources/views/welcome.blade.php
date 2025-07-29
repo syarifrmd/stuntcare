@@ -110,28 +110,88 @@
             background-color: #D1478E; /* pink-dark */
         }
         .faq-content {
-            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding-top 0.5s ease-in-out, padding-bottom 0.5s ease-in-out;
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding 0.5s ease-in-out;
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            padding-left: 1.5rem; /* px-6 */
-            padding-right: 1.5rem; /* px-6 */
-            padding-top: 0;
-            padding-bottom: 0;
+            padding: 0 1.5rem;
         }
         .faq-content.open {
             opacity: 1;
-            padding-top: 1rem; /* py-4 */
-            padding-bottom: 1rem; /* py-4 */
-            /* max-height will be set by JS to content.scrollHeight */
+            max-height: 1000px; /* Increased max-height to accommodate longer content */
+            padding: 1.5rem;
         }
         /* Smooth scroll for nav links */
         html {
             scroll-behavior: smooth;
         }
+        
+        /* Scroll Animation Classes */
+        .scroll-animation {
+            opacity: 0;
+            transition: all 0.8s ease-out;
+            will-change: transform, opacity;
+        }
+        
+        .scroll-animation.fade-up {
+            transform: translateY(50px);
+        }
+        
+        .scroll-animation.fade-down {
+            transform: translateY(-50px);
+        }
+        
+        .scroll-animation.fade-left {
+            transform: translateX(50px);
+        }
+        
+        .scroll-animation.fade-right {
+            transform: translateX(-50px);
+        }
+        
+        .scroll-animation.zoom-in {
+            transform: scale(0.8);
+        }
+        
+        .scroll-animation.active {
+            opacity: 1;
+            transform: translate(0) scale(1);
+        }
+
+        .scroll-animation.inactive {
+            opacity: 0;
+        }
+
+        /* Message section specific animations */
+        .message-section .scroll-animation.inactive.fade-left {
+            transform: translateX(50px);
+        }
+
+        .message-section .scroll-animation.inactive.fade-right {
+            transform: translateX(-50px);
+        }
+
+        /* FAQ specific animations */
+        .faq-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .faq-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
+        <!-- PWA  -->
+        <meta name="theme-color" content="#6777ef"/>
+        <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+        <link rel="manifest" href="{{ asset('/manifest.json') }}">
 </head>
 <body class="min-h-screen">
+<button id="pwa-install-btn" class="bg-pink-500" style="display:none; position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; color: white; border: none; border-radius: 8px; z-index: 1000;">
+   Install App
+</button>
     <nav class="bg-white py-4 shadow-md fixed w-full z-50 top-0">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <a href="#hero" class="flex items-center">
@@ -155,7 +215,7 @@
 
     <section id="hero" class="pt-32 pb-20 bg-pink-50 relative overflow-hidden">
         <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
-            <div class="md:w-1/2 mb-12 md:mb-0 animate-slide-in-left hero-content-item">
+            <div class="md:w-1/2 mb-12 md:mb-0 scroll-animation fade-left hero-content-item">
                 <div class="text-7xl md:text-5xl font-bold text-pink-stunt leading-tight mb-6">
                     <span class="typing" id="typing">Mari mulai perjalanan sehat bersama StuntCare!</span>
                 </div>
@@ -164,45 +224,45 @@
                     hadir sebagai partner Anda dalam tumbuh kembang anak yang optimal.
                 </p>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="#" class="bg-pink-stunt hover:bg-pink-dark text-center text-white font-medium px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">Ayo Pantau!</a>
-                    <a href="#" class="border-2 border-pink-stunt text-center text-pink-stunt hover:bg-pink-stunt hover:text-white font-medium px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105">Jelajahi</a>
+                    <a href="{{route('login')}}" class="bg-pink-stunt hover:bg-pink-dark text-center text-white font-medium px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">Ayo Pantau!</a>
+                    <a href="#features" class="border-2 border-pink-stunt text-center text-pink-stunt hover:bg-pink-stunt hover:text-white font-medium px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105">Jelajahi</a>
                 </div>
             </div>
 
-            <div class="md:w-1/2 relative animate-slide-in-right">
-                <div id="threejs-hero-container"></div> <div class="bg-pink-200/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 relative shadow-2xl hero-content-item">
-                     <img src="{{asset('images/dokter.png')}}" alt="Dokter StuntCare" class="mx-auto rounded-lg w-auto h-80 sm:h-96 object-contain animate-subtle-bob">
+            <div class="md:w-1/2 relative scroll-animation fade-right">
+                <div class="bg-pink-200/50 backdrop-blur-sm rounded-xl p-2 sm:p-6 relative shadow-2xl">
+                    <img src="{{asset('images/dokter.png')}}" alt="Dokter StuntCare" class="mx-auto rounded-lg w-auto h-72 sm:h-96 object-contain animate-subtle-bob">
                     
-                    <div class="hero-interactive-card absolute top-4 sm:top-6 right-2 sm:right-0 bg-white rounded-lg p-3 shadow-md animate-pop-in-tr w-48 sm:w-max">
+                    <div class="hero-interactive-card absolute top-1 sm:top-6 right-1 sm:right-0 bg-white rounded-lg p-1.5 sm:p-3 shadow-md animate-pop-in-tr w-32 sm:w-max">
                         <div class="flex items-center">
                             <div>
-                                <p class="font-semibold text-xs sm:text-sm">Dr. Nadine A Sp.A</p>
-                                <p class="text-xxs sm:text-xs text-gray-500">Salah satu dokter terbaik</p>
+                                <p class="font-semibold text-[10px] sm:text-sm">Dr. Nadine A Sp.A</p>
+                                <p class="text-[8px] sm:text-xs text-gray-500">Salah satu dokter terbaik</p>
                             </div>
-                            <img src="{{asset('images/dokter.png')}}" alt="Doctor Avatar" class="w-8 h-8 rounded-full ml-2 hidden sm:block">
+                            <img src="{{asset('images/dokter.png')}}" alt="Doctor Avatar" class="w-5 h-5 sm:w-8 sm:h-8 rounded-full ml-1 sm:ml-2 hidden sm:block">
                         </div>
-                        <div class="bg-pink-stunt text-white text-xxs sm:text-xs font-medium px-2 py-1 rounded mt-1 text-center">
+                        <div class="bg-pink-stunt text-white text-[8px] sm:text-xs font-medium px-1.5 py-0.5 sm:px-2 sm:py-1 rounded mt-0.5 sm:mt-1 text-center">
                             Terverifikasi
                         </div>
                     </div>
 
-                    <div class="hero-interactive-card absolute bottom-4 sm:bottom-6 left-2 sm:left-6 bg-white rounded-lg p-3 sm:p-4 shadow-md w-52 sm:w-64 animate-pop-in-bl">
-                        <p class="font-semibold text-xs sm:text-sm mb-2">Pemantauan Harian</p>
-                        <div class="space-y-1 sm:space-y-2">
+                    <div class="hero-interactive-card absolute bottom-1 sm:bottom-6 left-1 sm:left-6 bg-white rounded-lg p-1.5 sm:p-4 shadow-md w-36 sm:w-64 animate-pop-in-bl">
+                        <p class="font-semibold text-[10px] sm:text-sm mb-1 sm:mb-2">Pemantauan Harian</p>
+                        <div class="space-y-0.5 sm:space-y-2">
                             <div>
-                                <div class="flex justify-between text-xxs sm:text-xs mb-0.5 sm:mb-1"><span>Karbohidrat</span><span>60%</span></div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5 sm:h-2"><div class="bg-pink-stunt h-1.5 sm:h-2 rounded-full" style="width: 60%"></div></div>
+                                <div class="flex justify-between text-[8px] sm:text-xs mb-0.5 sm:mb-1"><span>Karbohidrat</span><span>60%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-0.5 sm:h-2"><div class="bg-pink-stunt h-0.5 sm:h-2 rounded-full" style="width: 60%"></div></div>
                             </div>
                             <div>
-                                <div class="flex justify-between text-xxs sm:text-xs mb-0.5 sm:mb-1"><span>Protein</span><span>75%</span></div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5 sm:h-2"><div class="bg-pink-stunt h-1.5 sm:h-2 rounded-full" style="width: 75%"></div></div>
+                                <div class="flex justify-between text-[8px] sm:text-xs mb-0.5 sm:mb-1"><span>Protein</span><span>75%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-0.5 sm:h-2"><div class="bg-pink-stunt h-0.5 sm:h-2 rounded-full" style="width: 75%"></div></div>
                             </div>
                             <div>
-                                <div class="flex justify-between text-xxs sm:text-xs mb-0.5 sm:mb-1"><span>Vitamin</span><span>100%</span></div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5 sm:h-2"><div class="bg-pink-stunt h-1.5 sm:h-2 rounded-full" style="width: 100%"></div></div>
+                                <div class="flex justify-between text-[8px] sm:text-xs mb-0.5 sm:mb-1"><span>Vitamin</span><span>100%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-0.5 sm:h-2"><div class="bg-pink-stunt h-0.5 sm:h-2 rounded-full" style="width: 100%"></div></div>
                             </div>
                         </div>
-                        <button class="bg-pink-stunt hover:bg-pink-dark text-white text-xxs sm:text-xs font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-md sm:rounded-lg w-full mt-2 sm:mt-3 transition duration-300">
+                        <button class="bg-pink-stunt hover:bg-pink-dark text-white text-[8px] sm:text-xs font-medium px-1.5 py-0.5 sm:px-4 sm:py-2 rounded-md sm:rounded-lg w-full mt-1 sm:mt-3 transition duration-300">
                             Belum Terpenuhi
                         </button>
                     </div>
@@ -211,25 +271,25 @@
         </div>
     </section>
 
-    <section id="features" class="py-16 animate-fade-in">
+    <section id="features" class="py-16">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Fitur StuntCare</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16 scroll-animation fade-down">Fitur StuntCare</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl scroll-animation fade-up" style="transition-delay: 0.1s">
                     <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-chart-bar text-2xl"></i></div>
                     <h3 class="text-xl font-semibold text-pink-stunt mb-3">Pemantauan Gizi</h3>
                     <p class="text-gray-600 text-sm">Lacak asupan energi, protein, lemak, dan karbohidrat anak setiap hari.</p>
                 </div>
-                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl scroll-animation fade-up" style="transition-delay: 0.2s">
                     <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-book-open text-2xl"></i></div> <h3 class="text-xl font-semibold text-pink-stunt mb-3">Artikel Edukasi</h3>
                     <p class="text-gray-600 text-sm">Dapatkan konten informatif seputar nutrisi dan pencegahan stunting.</p>
                 </div>
-                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl scroll-animation fade-up" style="transition-delay: 0.3s">
                     <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-bell text-2xl"></i></div>
                     <h3 class="text-xl font-semibold text-pink-stunt mb-3">Pengingat Harian</h3>
                     <p class="text-gray-600 text-sm">Ingatkan konsumsi makanan sesuai kebutuhan harian anak.</p>
                 </div>
-                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl">
+                <div class="feature-card bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl scroll-animation fade-up" style="transition-delay: 0.4s">
                     <div class="bg-pink-light text-pink-stunt p-3 rounded-lg inline-block mb-4"><i class="fas fa-stethoscope text-2xl"></i></div>
                     <h3 class="text-xl font-semibold text-pink-stunt mb-3">Konsultasi Dokter</h3>
                     <p class="text-gray-600 text-sm">Terhubung ke dokter anak langsung via WhatsApp.</p>
@@ -241,10 +301,10 @@
     <section id="about" class="py-16 bg-pink-50 overflow-hidden">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                <div class="md:w-1/3 animate-slide-in-left">
+                <div class="md:w-1/3 scroll-animation fade-left">
                     <img src="{{asset('images/dokteranak.png')}}" alt="Keluarga dengan anak" class="rounded-lg shadow-xl w-full h-auto object-cover">
                 </div>
-                <div class="md:w-2/3 animate-slide-in-right">
+                <div class="md:w-2/3 scroll-animation fade-right">
                     <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt mb-6">Tentang StuntCare</h2>
                     <p class="text-gray-700 mb-4 leading-relaxed">StuntCare adalah aplikasi pintar yang dirancang untuk membantu orang tua dalam memantau asupan gizi anak sehari-hari. Kami percaya bahwa pencegahan stunting dimulai dari pengetahuan tepat yang didukung oleh teknologi.</p>
                     <p class="text-gray-700 mb-4 leading-relaxed">Dengan menggabungkan data gizi, edukasi kesehatan, serta pengingat harian, StuntCare hadir sebagai solusi praktis dan terpercaya untuk memaksimalkan tumbuh kembang anak Anda.</p>
@@ -254,10 +314,11 @@
         </div>
     </section>
 
-    <section id="testimonials" class="py-16 animate-fade-in">
+    <section id="testimonials" class="py-16">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Apa Kata Mereka?</h2> <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16 scroll-animation fade-down">Apa Kata Mereka?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl scroll-animation zoom-in" style="transition-delay: 0.1s">
                     <div class="flex items-center mb-4">
                         <img src="https://placehold.co/48x48/FFD1DC/4A4A4A?text=AD&font=Poppins" alt="Bu Dinda" class="w-12 h-12 rounded-full mr-4">
                         <div>
@@ -267,7 +328,7 @@
                     </div>
                     <p class="text-gray-700 italic text-sm">"Sejak pakai StuntCare, saya lebih tenang karena bisa pantau kebutuhan gizi anak setiap hari. Aplikasinya mudah digunakan!"</p>
                 </div>
-                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
+                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl scroll-animation zoom-in" style="transition-delay: 0.2s">
                     <div class="flex items-center mb-4">
                         <img src="https://placehold.co/48x48/FFD1DC/4A4A4A?text=BS&font=Poppins" alt="Pak Budi" class="w-12 h-12 rounded-full mr-4">
                         <div>
@@ -277,7 +338,7 @@
                     </div>
                     <p class="text-gray-700 italic text-sm">"Artikel edukasinya sangat membantu saya memahami lebih dalam tentang stunting. Fitur pengingat juga top!"</p>
                 </div>
-                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
+                <div class="testimonial-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl scroll-animation zoom-in" style="transition-delay: 0.3s">
                     <div class="flex items-center mb-4">
                         <img src="https://placehold.co/48x48/FFD1DC/4A4A4A?text=CD&font=Poppins" alt="Bu Citra" class="w-12 h-12 rounded-full mr-4">
                         <div>
@@ -294,7 +355,7 @@
     <section id="feedback" class="py-16 bg-pink-50 overflow-hidden">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                <div class="md:w-1/2 mb-8 md:mb-0 animate-slide-in-left">
+                <div class="md:w-1/2 mb-8 md:mb-0 scroll-animation fade-left">
                     <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt mb-4">Berikan Umpan Balik</h2>
                     <p class="text-lg text-pink-dark font-medium mb-6">Umpan Balikmu Sangat Berarti Untuk Perkembangan Aplikasi StuntCare!</p>
                     <div class="relative mt-8 sm:mt-12">
@@ -302,7 +363,7 @@
                         <div class="absolute inset-0 bg-pink-200/70 rounded-full -z-10 transform translate-y-8 scale-95 blur-xl"></div>
                     </div>
                 </div>
-                <div class="md:w-1/2 md:pl-8 animate-slide-in-right">
+                <div class="md:w-1/2 md:pl-8 scroll-animation fade-right">
                     <p class="text-gray-700 mb-6">Punya pertanyaan atau umpan balik? Sampaikan kepada kami!</p>
                     <form action="#" method="POST" class="space-y-6 bg-white p-8 rounded-xl shadow-xl">
                         <div>
@@ -330,11 +391,11 @@
         </div>
     </section>
     
-    <section id="faq" class="py-16 animate-fade-in">
+    <section id="faq" class="py-16">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16">Pertanyaan yang Sering Diajukan</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-pink-stunt text-center mb-16 scroll-animation fade-down">Pertanyaan yang Sering Diajukan</h2>
             <div class="max-w-3xl mx-auto space-y-4" id="faqAccordion">
-                <div class="max-h-60 bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                <div class="faq-item max-h-60 bg-pink-stunt rounded-xl overflow-hidden shadow-md">
                     <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
                         <span class="font-medium">Apakah aplikasi StuntCare gratis?</span>
                         <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -343,7 +404,7 @@
                         <p class="text-gray-700 text-sm">Ya, aplikasi StuntCare dapat digunakan secara gratis dengan mengakses semua fitur</p>
                     </div>
                 </div>
-                <div class="bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                <div class="faq-item max-h-60 bg-pink-stunt rounded-xl overflow-hidden shadow-md">
                     <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
                         <span class="font-medium">Apakah data anak saya aman di aplikasi ini?</span>
                         <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -352,9 +413,7 @@
                         <p class="text-gray-700 text-sm">Keamanan data anak Anda adalah prioritas utama kami. Semua data dienkripsi dan disimpan dengan aman menggunakan standar keamanan internasional terkini.</p>
                     </div>
                 </div>
-
-
-                <div class="bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                <div class="faq-item max-h-60 bg-pink-stunt rounded-xl overflow-hidden shadow-md">
                     <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
                         <span class="font-medium">Bagaimana cara saya berkonsultasi dengan dokter?</span>
                         <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -363,7 +422,7 @@
                         <p class="text-gray-700 text-sm">Anda dapat berkonsultasi dengan dokter anak berpengalaman melalui fitur chat WhatsApp yang terintegrasi. Cukup klik tombol "Konsultasi Dokter" pada aplikasi dan ikuti petunjuknya.</p>
                     </div>
                 </div>
-                 <div class="bg-pink-stunt rounded-xl overflow-hidden shadow-md">
+                <div class="faq-item max-h-60 bg-pink-stunt rounded-xl overflow-hidden shadow-md">
                     <button class="faq-button flex justify-between items-center w-full text-left text-white px-6 py-4 focus:outline-none">
                         <span class="font-medium">Bisakah saya melacak gizi lebih dari satu anak?</span>
                         <svg class="h-5 w-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -431,6 +490,24 @@
         </div>
     </footer>
 
+    <script src="{{ asset('/sw.js') }}"></script>
+<script>
+   if ("serviceWorker" in navigator) {
+      // Register a service worker hosted at the root of the
+      // site using the default scope.
+      navigator.serviceWorker.register("/sw.js").then(
+      (registration) => {
+         console.log("Service worker registration succeeded:", registration);
+      },
+      (error) => {
+         console.error(`Service worker registration failed: ${error}`);
+      },
+    );
+  } else {
+     console.error("Service workers are not supported.");
+  }
+</script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const texts = [
@@ -475,43 +552,35 @@
         // Set current year in footer
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-        // Accordion Script for FAQ
+        // FAQ Accordion
         document.addEventListener('DOMContentLoaded', function() {
             const faqAccordion = document.getElementById('faqAccordion');
             if (faqAccordion) {
                 const accordionButtons = faqAccordion.querySelectorAll('.faq-button');
-                const downArrowSVG = '<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />';
-                const upArrowSVG = '<path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />';
-
+                
                 accordionButtons.forEach(button => {
                     button.addEventListener('click', () => {
                         const content = button.nextElementSibling;
                         const icon = button.querySelector('svg');
                         const isOpen = content.classList.contains('open');
-
-                        // Optional: Close other open items
-                        // accordionButtons.forEach(otherButton => {
-                        //     if (otherButton !== button) {
-                        //         const otherContent = otherButton.nextElementSibling;
-                        //         const otherIcon = otherButton.querySelector('svg');
-                        //         if (otherContent.classList.contains('open')) {
-                        //             otherContent.classList.remove('open');
-                        //             otherContent.style.maxHeight = null;
-                        //             otherIcon.innerHTML = downArrowSVG;
-                        //             otherIcon.classList.remove('rotate-180');
-                        //         }
-                        //     }
-                        // });
+                        
+                        // Close all other items
+                        accordionButtons.forEach(otherButton => {
+                            if (otherButton !== button) {
+                                const otherContent = otherButton.nextElementSibling;
+                                const otherIcon = otherButton.querySelector('svg');
+                                if (otherContent.classList.contains('open')) {
+                                    otherContent.classList.remove('open');
+                                    otherIcon.classList.remove('rotate-180');
+                                }
+                            }
+                        });
                         
                         if (isOpen) {
                             content.classList.remove('open');
-                            content.style.maxHeight = null; 
-                            icon.innerHTML = downArrowSVG;
                             icon.classList.remove('rotate-180');
                         } else {
                             content.classList.add('open');
-                            content.style.maxHeight = content.scrollHeight + "px";
-                            icon.innerHTML = upArrowSVG; // Or simply rotate
                             icon.classList.add('rotate-180');
                         }
                     });
@@ -609,6 +678,82 @@
             console.warn('Three.js library not loaded. 3D animation will not run.');
         }
 
+        // Enhanced Scroll Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            // Message section observer
+            const messageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        entry.target.classList.remove('inactive');
+                    } else {
+                        entry.target.classList.remove('active');
+                        entry.target.classList.add('inactive');
+                    }
+                });
+            }, observerOptions);
+
+            // FAQ items observer
+            const faqObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    } else {
+                        entry.target.classList.remove('active');
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            });
+
+            // Observe message section elements
+            document.querySelectorAll('.message-section .scroll-animation').forEach((element) => {
+                messageObserver.observe(element);
+            });
+
+            // Observe FAQ items
+            document.querySelectorAll('.faq-item').forEach((element, index) => {
+                element.style.transitionDelay = `${index * 0.2}s`;
+                faqObserver.observe(element);
+            });
+
+            // Other section observers remain the same
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        entry.target.classList.remove('inactive');
+                    } else {
+                        const rect = entry.target.getBoundingClientRect();
+                        const isScrollingDown = rect.top < 0;
+                        
+                        if (isScrollingDown) {
+                            entry.target.style.transform = 'translateY(-50px)';
+                        } else {
+                            entry.target.style.transform = 'translateY(50px)';
+                        }
+                        
+                        entry.target.classList.remove('active');
+                        entry.target.classList.add('inactive');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe other elements
+            document.querySelectorAll('.scroll-animation:not(.message-section *)').forEach((element) => {
+                observer.observe(element);
+            });
+        });
     </script>
+     <script src="{{ asset('pwa-install.js') }}"></script>
+    
 </body>
 </html>

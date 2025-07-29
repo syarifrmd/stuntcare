@@ -12,29 +12,29 @@ class FoodController extends Controller
     // Menampilkan semua data makanan, dengan filter kategori opsional, pencarian
     public function index(Request $request)
     {
-        // Ambil child_id dari query string
-    $child_id = $request->child_id;
+        $query = Food::query();
+        $child = null;
 
-    // Cari data anak berdasarkan ID dan user yang sedang login
-    $child = Children::where('id', $child_id)
-                     ->where('user_id', Auth::id())
-                     ->firstOrFail(); // lebih aman, akan error 404 jika anak tidak ditemukan
+        // Only get child if child_id is provided
+        if ($request->has('child_id')) {
+            $child = Children::where('id', $request->child_id)
+                            ->where('user_id', Auth::id())
+                            ->first();
+        }
 
-    $query = Food::query();
+        // Filter kategori
+        if ($request->has('category') && $request->category != '') {
+            $query->where('category', $request->category);
+        }
 
-    // Filter kategori
-    if ($request->has('category') && $request->category != '') {
-        $query->where('category', $request->category);
-    }
+        // Filter pencarian nama
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
 
-    // Filter pencarian nama
-    if ($request->has('search') && $request->search != '') {
-        $query->where('name', 'like', '%' . $request->search . '%');
-    }
+        $foods = $query->get();
 
-    $foods = $query->get();
-
-    return view('foods.index', compact('foods', 'child'));
+        return view('foods.index', compact('foods', 'child'));
     }
 
     // Menampilkan form tambah data

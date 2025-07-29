@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StuntCare - Tumbuh Kembang Optimal</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        window.userId = {{ Auth::id() }};
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Custom CSS untuk animasi ketik dan styling tambahan jika diperlukan */
@@ -21,8 +24,16 @@
         }
         /* .feature-card styling bisa langsung menggunakan Tailwind utilities di HTML */
     </style>
+
+        <!-- PWA  -->
+        <meta name="theme-color" content="#6777ef"/>
+        <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+        <link rel="manifest" href="{{ asset('/manifest.json') }}">
 </head>
 <body class="font-['Poppins'] bg-gray-50 text-gray-800">
+<button id="pwa-install-btn" class="bg-pink-500" style="display:none; position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; color: white; border: none; border-radius: 8px; z-index: 1000;">
+   Install App
+</button>
 <x-app-layout>
     <span name="header"></span>
     <main class="">
@@ -169,6 +180,26 @@
         </div>
     </div>
 
+    <livewire:chatbot />
+    <script src="{{ asset('/sw.js') }}"></script>
+    <script>
+    if ("serviceWorker" in navigator) {
+        // Register a service worker hosted at the root of the
+        // site using the default scope.
+        navigator.serviceWorker.register("/sw.js").then(
+        (registration) => {
+            console.log("Service worker registration succeeded:", registration);
+        },
+        (error) => {
+            console.error(`Service worker registration failed: ${error}`);
+        },
+        );
+    } else {
+        console.error("Service workers are not supported.");
+    }
+    </script>
+    <script src="{{ asset('pwa-install.js') }}"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Typing Animation Script
@@ -266,6 +297,37 @@
                         closeArticleModal();
                     }
                 });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.Echo === 'undefined') {
+                console.error('Laravel Echo belum terinisialisasi!');
+                return;
+            }
+            if (!window.userId) {
+                console.error('User ID tidak ditemukan!');
+                return;
+            }
+            window.Echo.private('user.' + window.userId)
+                .listen('MealReminderNotification', (e) => {
+                    showWebNotification(e.message);
+                })
+                .listen('DailyNutritionNotification', (e) => {
+                    showWebNotification(e.message);
+                });
+
+            function showWebNotification(message) {
+                if (Notification.permission === 'granted') {
+                    new Notification('StuntCare', { body: message, icon: '/logo.png' });
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification('StuntCare', { body: message, icon: '/logo.png' });
+                        }
+                    });
+                }
             }
         });
     </script>
