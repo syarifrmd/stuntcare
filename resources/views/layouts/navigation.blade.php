@@ -57,7 +57,7 @@
                         Pemantauan gizi
                 </a>
 
-                <!--Konsultasi Doktor -->
+                <!--Konsultasi Dokter -->
                 <a href="{{ route('konsultasidokter.index') }}"
                     class="flex items-center px-4 py-2 text-sm font-medium rounded-full border transition delay-150 duration-300 ease-in-out
                     {{ request()->routeIs('konsultasidokter.index') 
@@ -70,11 +70,11 @@
                 </a>
              
                 <!-- Notification Bell -->
-                <button class="text-gray-400 hover:text-pink-400 focus:outline-none">
+                <a href="{{ route('notifikasi.riwayat') }}" class="text-gray-400 hover:text-pink-400 focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
-                </button>
+                </a>
 
                 <!-- User Dropdown (Desktop) -->
                 <div x-data="{ open: false }" class="relative ml-4">
@@ -140,12 +140,12 @@
                         </div>
                         <a href="{{ route('lihatprofile.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">Edit Profil</a>
                         <!-- Notification in Mobile Dropdown -->
-                        <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 flex items-center">
+                        <a href="{{ route('notifikasi.riwayat') }}" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
                             Notifikasi
-                        </button>
+                        </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">

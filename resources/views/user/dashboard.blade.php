@@ -300,6 +300,8 @@
             }
         });
     </script>
+
+    <!-- script notifikasi -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof window.Echo === 'undefined') {

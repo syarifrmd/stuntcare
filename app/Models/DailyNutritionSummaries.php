@@ -24,6 +24,7 @@ class DailyNutritionSummaries extends Model
         'protein_status',
         'fat_status',
         'carb_status',
+        'is_fulfilled',
     ];
 
     public function child()

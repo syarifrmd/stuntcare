@@ -14,15 +14,13 @@ class HistoriController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::id();
-
-        // Ambil child_id dari query parameter
         $childId = $request->input('child_id');
 
+        // Validasi child_id
         if (!$childId) {
             return redirect()->route('pemantauan.index')->with('error', 'Pilih anak terlebih dahulu.');
         }
 
-        // Pastikan anak ini memang milik user yang login
         $child = Children::where('id', $childId)
             ->where('user_id', $userId)
             ->first();
@@ -31,62 +29,67 @@ class HistoriController extends Controller
             return redirect()->route('pemantauan.index')->with('error', 'Data anak tidak ditemukan atau tidak milik Anda.');
         }
 
-        // Ambil parameter 'date' dari request (jika ada), default ke hari ini
-        $datebydate = $request->input('date', now()->toDateString());
-        $selectedDay = $request->get('day', Carbon::parse($datebydate)->format('l'));
+        // Ambil parameter filter
+        $selectedDate = $request->input('date');
+        $selectedDay = $request->input('day');
 
-        // Hitung tanggal spesifik dari hari yang dipilih
-        $date = $this->getDateByDay($selectedDay, $datebydate);
-
-        // Ambil histori summary
+        if ($selectedDay) {
+            // Jika day dipilih, gunakan date yang sudah ada atau today sebagai anchor
+            $anchorDate = $selectedDate ?: now()->toDateString();
+            $date = $this->getDateByDay($selectedDay, $anchorDate);
+        } elseif ($selectedDate) {
+            $date = Carbon::parse($selectedDate)->toDateString();
+        } else {
+            $date = now()->toDateString();
+        }
+        // Query histori dan intake berdasarkan tanggal final
         $histori = DailyNutritionSummaries::where('child_id', $child->id)
             ->whereDate('date', $date)
             ->orderBy('date', 'desc')
             ->get();
 
-        // Ambil data intake makanan harian
         $intakes = DailyIntake::where('child_id', $child->id)
             ->whereDate('date', $date)
             ->with('food')
             ->get();
 
-        // Ambil summary gizi harian (satu baris saja)
         $summary = DailyNutritionSummaries::where('child_id', $child->id)
             ->whereDate('date', $date)
             ->first();
 
-        return view('pemantauan.histori', compact(
-            'histori',
-            'child',
-            'date',
-            'selectedDay',
-            'intakes',
-            'summary',
-            'datebydate'
-        ));
+        return view('pemantauan.histori', [
+            'histori'      => $histori,
+            'child'        => $child,
+            'date'         => $date,
+            'selectedDay'  => $selectedDay,
+            'intakes'      => $intakes,
+            'summary'      => $summary
+        ]);
     }
 
-    private function getDateByDay($day, $date = null)
+    /**
+     * Ambil tanggal spesifik sesuai nama hari di minggu berjalan
+     */
+    private function getDateByDay($day, $baseDate = null)
     {
-        $today = $date ? Carbon::parse($date) : Carbon::now();
-
-        switch ($day) {
-            case 'Monday':
-                return $today->startOfWeek()->toDateString();
-            case 'Tuesday':
-                return $today->startOfWeek()->addDays(1)->toDateString();
-            case 'Wednesday':
-                return $today->startOfWeek()->addDays(2)->toDateString();
-            case 'Thursday':
-                return $today->startOfWeek()->addDays(3)->toDateString();
-            case 'Friday':
-                return $today->startOfWeek()->addDays(4)->toDateString();
-            case 'Saturday':
-                return $today->startOfWeek()->addDays(5)->toDateString();
-            case 'Sunday':
-                return $today->startOfWeek()->addDays(6)->toDateString();
-            default:
-                return $today->toDateString();
-        }
+        $anchor = $baseDate ? Carbon::parse($baseDate) : Carbon::now();
+    
+        // Pastikan selalu hitung dari minggu yang mengandung anchor
+        $startOfWeek = $anchor->copy()->startOfWeek(Carbon::MONDAY);
+    
+        $daysMap = [
+            'Monday'    => 0,
+            'Tuesday'   => 1,
+            'Wednesday' => 2,
+            'Thursday'  => 3,
+            'Friday'    => 4,
+            'Saturday'  => 5,
+            'Sunday'    => 6,
+        ];
+    
+        return isset($daysMap[$day])
+            ? $startOfWeek->addDays($daysMap[$day])->toDateString()
+            : $anchor->toDateString();
     }
+    
 }

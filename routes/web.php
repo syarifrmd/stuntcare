@@ -16,6 +16,7 @@ use App\Http\Controllers\LihatProfilController;
 use App\Http\Controllers\KonsultasiDokterController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DokterProfileController;
+use App\Http\Controllers\NotifikasiController;
 
 // Halaman Welcome (public)
 Route::get('/', function () {
@@ -56,8 +57,13 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 });
 
+
+Route::get('/pemantauan/histori', [HistoriController::class, 'index'])
+    ->name('histori.index')
+    ->middleware('auth');
 // Route untuk dokter
 Route::middleware(['auth', 'verified', 'role:dokter'])->group(function () {
     // Route untuk dashboard dokter
@@ -95,12 +101,12 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::resource('food', FoodController::class);
     Route::resource('pemantauan', PemantauanController::class);
     Route::resource('children', ChildrenController::class);
-    Route::resource('histori', HistoriController::class);
     Route::resource('lihatprofile', LihatProfilController::class);
     
     // Daily intake tambahan
     Route::post('/intakes/store-direct', [DailyIntakeController::class, 'storeFromFood'])->name('intakes.storeDirect');
 });
+
 
 // Route untuk admin (Filament)
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
@@ -115,5 +121,8 @@ require __DIR__.'/auth.php';
 Route::get('/verify-otp', [RegisteredUserController::class, 'showOtpForm'])->name('verify.otp.form');
 Route::post('/verify-otp', [RegisteredUserController::class, 'verifyOtp'])->name('verify.otp');
 
+Route::get('/notifikasi', [NotifikasiController::class, 'riwayat'])->name('notifikasi.riwayat');
+Route::get('/notifikasi/{id}/read', [NotifikasiController::class, 'tandaiDibaca'])->name('notifikasi.read');
+Route::post('/notifikasi/read-all', [NotifikasiController::class, 'tandaiSemuaDibaca'])->name('notifikasi.readAll');
 
 
