@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesan Jadwal Konsultasi Dokter - StuntCare</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -149,18 +149,24 @@
                                 </td>
                                 <td class="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap font-medium">
                                     <template x-if="jadwal.status == 'Tersedia'">
-                                        <form :action="`{{ url('konsultasidokter') }}/${jadwal.id}/book`" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memesan jadwal ini?');">
-                                            @csrf
-                                            <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors text-xs sm:text-sm shadow hover:shadow-md">
-                                                Pesan
-                                            </button>
-                                        </form>
+                                        <button type="button" @click="openConfirmationModal(jadwal)" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors text-xs sm:text-sm shadow hover:shadow-md">
+                                            Pesan
+                                        </button>
                                     </template>
                                     <template x-if="jadwal.status == 'Memesan'">
                                         <span class="text-yellow-600" x-text="jadwal.user_id == {{ Auth::id() ?? 'null' }} ? 'Menunggu Konfirmasi Dokter' : 'Sedang diproses'"></span>
                                     </template>
                                     <template x-if="jadwal.status == 'Dipesan'">
-                                        <span class="text-blue-600" x-text="jadwal.user_id == {{ Auth::id() ?? 'null' }} ? 'Jadwal Anda Dipesan' : 'Sudah Dipesan'"></span>
+                                        <div class="flex flex-col items-start gap-2">
+                                            <span class="text-blue-600" x-text="jadwal.user_id == {{ Auth::id() ?? 'null' }} ? 'Jadwal Anda' : 'Sudah Dipesan'"></span>
+                                            <template x-if="jadwal.user_id == {{ Auth::id() ?? 'null' }}">
+                                                <a :href="formatWaUrl(jadwal.no_wa_dokter)" target="_blank" rel="noopener noreferrer"
+                                                   class="inline-flex items-center bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition-colors text-xs shadow hover:shadow-md">
+                                                   <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-.88-.436-1.017-.486s-.282-.074-.402.074c-.12.149-.384.486-.47.56s-.175.088-.324.014c-.149-.074-.633-.232-1.207-.742s-.935-1.11-.963-1.16c-.028-.05-.056-.074 0-.149.056-.074.12-.175.175-.232s.085-.12.12-.2.014-.149-.042-.282c-.056-.149-.47-.935-.556-1.017-.085-.088-.175-.074-.25-.074s-.149 0-.212 0h-.175a.573.573 0 00-.58.556c-.014.324.212.65.227.665.014.014.47.775.47 1.16 0 .384.014.72.042.82s.227.282.47.37c.243.088.47.149.633.149.19.014.324 0 .426-.042.118-.056.88-.359 1.002-.716.12-.358.12-.664.085-.716s-.07-.088-.149-.149zM12 2C6.486 2 2 6.486 2 12s4.486 10 10 10c5.514 0 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/></svg>
+                                                    Hubungi WA
+                                                </a>
+                                            </template>
+                                        </div>
                                     </template>
                                     <template x-if="!['Tersedia', 'Memesan', 'Dipesan'].includes(jadwal.status)">
                                         <span class="text-gray-500 italic" x-text="jadwal.status"></span>
@@ -264,9 +270,6 @@
                                     </td>
                                     <td class="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap font-medium">
                                         <span class="text-gray-400 italic text-xs">Tidak ada aksi</span>
-                                        {{-- Atau tombol lihat detail jika ada:
-                                        <button class="text-blue-500 hover:underline text-xs">Lihat Detail</button>
-                                        --}}
                                     </td>
                                 </tr>
                             </template>
@@ -275,9 +278,54 @@
                 </div>
             </div>
         </div>
+
+        <div x-show="isModalOpen" x-cloak
+            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0">
+            <div @click.away="isModalOpen = false" class="relative mx-auto p-5 border w-11/12 sm:w-96 shadow-lg rounded-md bg-white"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-pink-100">
+                         <svg class="h-6 w-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 font-montserrat mt-2">Konfirmasi Pemesanan</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500">
+                            Anda akan memesan jadwal konsultasi dengan <strong x-text="selectedJadwal?.nama_dokter"></strong> pada <strong x-text="formatTanggalWaktu(selectedJadwal?.waktu_konsultasi)"></strong>.
+                            <br><br>
+                            Apakah Anda yakin?
+                        </p>
+                    </div>
+                    <div class="items-center px-4 py-3 gap-2 flex justify-center">
+                        <button @click="isModalOpen = false"
+                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 w-28 transition-colors">
+                            Batal
+                        </button>
+                        <button @click="confirmBooking()"
+                                class="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 w-28 transition-colors shadow hover:shadow-md">
+                            Ya, Yakin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="bookingForm" method="POST" style="display: none;">
+            @csrf
+        </form>
+
     </main>
     </div>
-
 </x-app-layout>
 
     <script>
@@ -285,6 +333,8 @@
         return {
             allJadwals: @json($jadwals ?? []),
             showHistory: false,
+            isModalOpen: false,
+            selectedJadwal: null,
             filters: {
                 searchDokter: '',
                 selectedDate: '',
@@ -296,23 +346,6 @@
                 selectedDate: '',
                 selectedDay: '',
                 selectedTimeSession: '',
-            },
-            init() {
-                if (this.allJadwals.length === 0 && '{{ app()->environment('local') }}') {
-                    console.log("Menggunakan dummy data untuk jadwal pemesanan (user view).");
-                    this.allJadwals = [
-                        {id: 1, dokter_id: 101, user_id: null, nama_dokter: 'Dr. Budi Santoso', no_wa_dokter: '081234567890', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addHours(2)->format('Y-m-d\TH:i') }}', status: 'Tersedia'},
-                        {id: 2, dokter_id: 102, user_id: {{ Auth::id() ?? 999 }}, nama_dokter: 'Dr. Siti Aminah', no_wa_dokter: '089876543210', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addDays(1)->setHour(14)->setMinute(30)->format('Y-m-d\TH:i') }}', status: 'Memesan'},
-                        {id: 3, dokter_id: 103, user_id: 998, nama_dokter: 'Dr. Agus Wijaya', no_wa_dokter: '087654321098', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addDays(1)->setHour(9)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Dipesan'},
-                        {id: 4, dokter_id: 101, user_id: 997, nama_dokter: 'Dr. Budi Santoso', no_wa_dokter: '081234567890', waktu_konsultasi: '{{ \Carbon\Carbon::now()->subDays(1)->setHour(11)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Selesai'},
-                        {id: 5, dokter_id: 102, user_id: null, nama_dokter: 'Dr. Siti Aminah', no_wa_dokter: '089876543210', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addDays(2)->setHour(16)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Tidak Tersedia'},
-                        {id: 6, dokter_id: 104, user_id: null, nama_dokter: 'Dr. Candra Dewi', no_wa_dokter: '08111222333', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addDays(3)->setHour(10)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Tersedia'},
-                        {id: 7, dokter_id: 105, user_id: null, nama_dokter: 'Dr. Budi Santoso', no_wa_dokter: '08222333444', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addDays(1)->setHour(19)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Tersedia'},
-                        {id: 8, dokter_id: 102, user_id: {{ Auth::id() ?? 999 }}, nama_dokter: 'Dr. Siti Aminah', no_wa_dokter: '089876543210', waktu_konsultasi: '{{ \Carbon\Carbon::now()->subDays(2)->setHour(10)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Selesai'},
-                        {id: 9, dokter_id: 101, user_id: null, nama_dokter: 'Dr. Budi Santoso', no_wa_dokter: '081234567890', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addDays(5)->setHour(11)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Tersedia'},
-                        {id: 10, dokter_id: 104, user_id: 1000, nama_dokter: 'Dr. Candra Dewi', no_wa_dokter: '08111222333', waktu_konsultasi: '{{ \Carbon\Carbon::now()->addDays(2)->setHour(17)->setMinute(0)->format('Y-m-d\TH:i') }}', status: 'Dipesan'},
-                    ];
-                }
             },
             get activeJadwals() {
                 let jadwals = this.allJadwals.filter(j => j.status !== 'Selesai');
@@ -406,6 +439,34 @@
             },
             toggleHistory() {
                 this.showHistory = !this.showHistory;
+            },
+            openConfirmationModal(jadwal) {
+                this.selectedJadwal = jadwal;
+                this.isModalOpen = true;
+            },
+            confirmBooking() {
+                if (this.selectedJadwal) {
+                    const form = document.getElementById('bookingForm');
+                    // Pastikan URL di-generate dengan benar oleh Laravel
+                    form.action = `{{ url('konsultasidokter') }}/${this.selectedJadwal.id}/book`;
+                    form.submit();
+                }
+                this.isModalOpen = false;
+            },
+            formatWaUrl(phoneNumber) {
+                if (!phoneNumber) return '#';
+                // Membersihkan nomor dari karakter selain angka
+                let formattedNumber = phoneNumber.replace(/[^0-9]/g, '');
+                // Mengganti awalan '0' dengan '62'
+                if (formattedNumber.startsWith('0')) {
+                    formattedNumber = '62' + formattedNumber.substring(1);
+                } else if (!formattedNumber.startsWith('62')) {
+                    // Jika tidak ada awalan 0 atau 62, tambahkan 62 (asumsi nomor Indonesia)
+                    formattedNumber = '62' + formattedNumber;
+                }
+                // Menambahkan pesan default
+                const message = encodeURIComponent('Halo Dokter, saya sudah memesan jadwal konsultasi melalui StuntCare. Mohon konfirmasinya.');
+                return `https://wa.me/${formattedNumber}?text=${message}`;
             },
             formatTanggalWaktu(dateTimeString) {
                 if (!dateTimeString) return '-';

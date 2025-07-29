@@ -4,9 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StuntCare - Tumbuh Kembang Optimal</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
         window.userId = {{ Auth::id() }};
+    </script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.Echo === 'undefined') {
+                console.error('Laravel Echo belum terinisialisasi!');
+                return;
+            }
+            if (!window.userId) {
+                console.error('User ID tidak ditemukan!');
+                return;
+            }
+            window.Echo.private('user.' + window.userId)
+                .listen('MealReminderNotification', (e) => {
+                    showWebNotification(e.message);
+                })
+                .listen('DailyNutritionNotification', (e) => {
+                    showWebNotification(e.message);
+                });
+
+            function showWebNotification(message) {
+                if (Notification.permission === 'granted') {
+                    new Notification('StuntCare', { body: message, icon: '/logo.png' });
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification('StuntCare', { body: message, icon: '/logo.png' });
+                        }
+                    });
+                }
+            }
+        });
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -24,9 +55,8 @@
         }
         /* .feature-card styling bisa langsung menggunakan Tailwind utilities di HTML */
     </style>
-
-        <!-- PWA  -->
-        <meta name="theme-color" content="#6777ef"/>
+    <!-- PWA  -->
+    <meta name="theme-color" content="#6777ef"/>
         <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
         <link rel="manifest" href="{{ asset('/manifest.json') }}">
 </head>
@@ -89,9 +119,14 @@
                         <div class="bg-pink-500 py-4 px-6 text-white text-xl md:text-2xl font-semibold">
                             {{ $article->title }}
                         </div>
-                        <img src="{{ $article->image_url ?? 'https://placehold.co/400x250/fce7f3/db2777?text=Artikel' }}" 
-                             onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=Error';"
-                             class="w-full h-48 md:h-56 object-cover" alt="Gambar Artikel: {{ $article->title }}">
+                        @if ($article->foto_artikel)
+                            <img src="{{ asset('storage/' . $article->foto_artikel) }}" alt="{{ $article->title }}"
+                                class="w-full h-full object-cover rounded transition-transform duration-300 hover:scale-105">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-xs sm:text-sm">
+                                Tidak ada gambar
+                            </div>
+                        @endif
                         <div class="p-6 text-gray-700 flex-grow">
                             <p class="text-base md:text-lg">{{ \Illuminate\Support\Str::limit(strip_tags($article->content), 120, '...') }}</p>
                         </div>
@@ -300,39 +335,7 @@
             }
         });
     </script>
-
-    <!-- script notifikasi -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof window.Echo === 'undefined') {
-                console.error('Laravel Echo belum terinisialisasi!');
-                return;
-            }
-            if (!window.userId) {
-                console.error('User ID tidak ditemukan!');
-                return;
-            }
-            window.Echo.private('user.' + window.userId)
-                .listen('MealReminderNotification', (e) => {
-                    showWebNotification(e.message);
-                })
-                .listen('DailyNutritionNotification', (e) => {
-                    showWebNotification(e.message);
-                });
-
-            function showWebNotification(message) {
-                if (Notification.permission === 'granted') {
-                    new Notification('StuntCare', { body: message, icon: '/logo.png' });
-                } else if (Notification.permission !== 'denied') {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            new Notification('StuntCare', { body: message, icon: '/logo.png' });
-                        }
-                    });
-                }
-            }
-        });
-    </script>
 </x-app-layout>
 </body>
 </html>
+

@@ -44,9 +44,7 @@ Route::get('/redirect', function () {
 
 // Route untuk user biasa
 Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
-    Route::get('/user/dashboard', function () {
-        return view('user.dashboard');
-    })->name('user.dashboard');
+    Route::get('/user/dashboard', [HomeController::class, 'dashboard'])->name('user.dashboard');
 
     // Menampilkan jadwal konsultasi yang tersedia untuk user
     Route::get('/konsultasidokter', [KonsultasiDokterController::class, 'index'])->name('konsultasidokter.index');
@@ -120,6 +118,9 @@ require __DIR__.'/auth.php';
 
 Route::get('/verify-otp', [RegisteredUserController::class, 'showOtpForm'])->name('verify.otp.form');
 Route::post('/verify-otp', [RegisteredUserController::class, 'verifyOtp'])->name('verify.otp');
+
+Route::post('konsultasidokter/{id}/book', [KonsultasiDokterController::class, 'book'])->name('konsultasidokter.book');
+    Route::post('dokter/konsultasi/{id}/confirm-pemesanan', [DokterController::class, 'confirmPemesananJadwal'])->name('dokter.konsultasi.confirmPemesanan');
 
 Route::get('/notifikasi', [NotifikasiController::class, 'riwayat'])->name('notifikasi.riwayat');
 Route::get('/notifikasi/{id}/read', [NotifikasiController::class, 'tandaiDibaca'])->name('notifikasi.read');
