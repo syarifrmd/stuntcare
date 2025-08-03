@@ -15,8 +15,6 @@ class DatabaseSeeder extends Seeder
     {
         // Memanggil seeder lain
         $this->call([
-            DailyNutritionSummariesSeeder::class,
-            NutritionNeedsByAgeSeeder::class,
         ]);
 
         // User::factory(10)->create();
