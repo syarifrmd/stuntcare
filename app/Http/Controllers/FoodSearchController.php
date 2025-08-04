@@ -19,7 +19,7 @@ class FoodSearchController extends Controller
     {
         $query = $request->get('query');
         $page = $request->get('page', 1);
-        $maxResults = 20;
+        $maxResults = 40;
 
         // Cache key based on query and page
         $cacheKey = "fatsecret_search_{$query}_{$page}";

@@ -79,99 +79,95 @@ class FoodController extends Controller
     {
         $foods = [];
         $error = null;
-        
         if ($request->has('query') && !empty($request->query)) {
             try {
                 $fatSecret = app(\App\Services\FatSecretService::class);
-                
-                // Ensure we pass the correct parameters
                 $query = trim($request->input('query'));
-                $region = $request->input('region', 'ID'); // Default to Indonesia
-                $language = $request->input('language', 'id'); // Default to Indonesian
-                
-                // Use the new v3 API for better Indonesian food search
-                $result = $fatSecret->foodsSearchV3($query, 0, 20, $region, $language);
-                
-                \Log::info('FatSecret search result (v3)', [
+                $result = $fatSecret->searchFood($query, 1, 20);
+                \Log::info('FatSecret search result (v2)', [
                     'query' => $query,
-                    'region' => $region,
-                    'language' => $language,
                     'result' => $result
                 ]);
-                
                 if (isset($result['error'])) {
-                    $error = $result['message'];
-                    \Log::error('FatSecret search error (v3)', ['error' => $result]);
+                    $error = $result['message'] ?? 'Gagal mengambil data dari FatSecret.';
+                    \Log::error('FatSecret search error (v2)', ['error' => $result]);
                 } elseif (isset($result['foods']['food'])) {
-                    // Handle array of foods
                     $foods = is_array($result['foods']['food']) ? $result['foods']['food'] : [$result['foods']['food']];
-                    \Log::info('FatSecret foods found (v3)', ['count' => count($foods)]);
+                    \Log::info('FatSecret foods found (v2)', ['count' => count($foods)]);
                 } else {
                     $error = 'Tidak ada hasil ditemukan';
-                    \Log::warning('FatSecret no results (v3)', ['result' => $result]);
+                    \Log::warning('FatSecret no results (v2)', ['result' => $result]);
                 }
             } catch (\Exception $e) {
                 $error = 'Terjadi kesalahan saat mencari makanan: ' . $e->getMessage();
-                \Log::error('FatSecret search exception (v3)', ['exception' => $e]);
+                \Log::error('FatSecret search exception (v2)', ['exception' => $e]);
             }
         }
-        
-        // Debug: Log what we're passing to view
-        \Log::info('Controller passing to view (v3)', [
+        \Log::info('Controller passing to view (v2)', [
             'foods_count' => count($foods),
             'error' => $error,
             'foods_sample' => array_slice($foods, 0, 2)
         ]);
-        
         return view('foods.searchFatSecret', compact('foods', 'error'));
     }
 
-    public function addFromFatSecret(Request $request)
-    {
-        try {
-            $request->validate([
-                'food_id' => 'required',
-                'food_name' => 'required'
-            ]);
-            
-            $fatSecret = app(\App\Services\FatSecretService::class);
-            $region = $request->input('region', 'ID'); // Default to Indonesia
-            $language = $request->input('language', 'id'); // Default to Indonesian
-            $foodDetail = $fatSecret->getFoodDetails($request->food_id, $region);
-            
-            if (isset($foodDetail['error'])) {
-                return back()->with('error', 'Gagal mengambil detail makanan: ' . $foodDetail['message']);
-            }
-            
-            if (isset($foodDetail['food'])) {
-                $food = $foodDetail['food'];
-                $nutrient = $food['servings']['serving'][0] ?? [];
-                
-                // Check if food already exists
-                $existingFood = Food::where('name', $food['food_name'])->first();
-                if ($existingFood) {
-                    return back()->with('error', 'Makanan ini sudah ada di database.');
-                }
-                
-                Food::create([
-                    'name' => $food['food_name'],
-                    'category' => $food['food_type'] ?? 'FatSecret',
-                    'energy' => $nutrient['calories'] ?? 0,
-                    'protein' => $nutrient['protein'] ?? 0,
-                    'fat' => $nutrient['fat'] ?? 0,
-                    'carbohydrate' => $nutrient['carbohydrate'] ?? 0,
-                    'created_by' => auth()->id(),
-                ]);
-                
-                return back()->with('success', 'Makanan "' . $food['food_name'] . '" berhasil ditambahkan ke database!');
-            }
-            
-            return back()->with('error', 'Gagal menambah makanan dari FatSecret.');
-            
-        } catch (\Exception $e) {
-            \Log::error('FatSecret addFromFatSecret exception', ['exception' => $e]);
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+public function addFromFatSecret(Request $request, \App\Services\FatSecretService $fatSecret)
+{
+    $request->validate(['food_id' => 'required']);
+
+    try {
+        $foodDetail = $fatSecret->getFoodDetails($request->food_id, 'ID', 'id');
+
+        if (isset($foodDetail['error'])) {
+            return back()->with('error', 'Gagal mengambil detail makanan: ' . $foodDetail['message']);
         }
+
+        if (isset($foodDetail['food'])) {
+            $foodData = $foodDetail['food'];
+
+            // Mengambil langsung data servings dari API tanpa manipulasi
+            $servings = $foodData['servings']['serving'];
+
+            // Pastikan jika hanya ada 1 serving, tetap dijadikan array agar mudah di-loop
+            if (!isset($servings[0])) {
+                $servings = [$servings];
+            }
+
+            foreach ($servings as $servingData) {
+                // Nama makanan disertai takaran sesuai data API
+                $foodNameWithServing = $foodData['food_name'] . ' - ' . $servingData['serving_description'];
+
+                $categoryMap = [
+                    'Brand' => 'Fatsecret', 'Generic' => 'Fatsecret', 'Fruit' => 'Buah',
+                    'Vegetable' => 'Sayuran', 'Meat' => 'Lauk Pauk', 'Snack' => 'Camilan',
+                    'Staple' => 'Makanan Pokok',
+                ];
+                $rawCategory = $foodData['food_type'] ?? 'Generic';
+                $category = $categoryMap[$rawCategory] ?? 'Fatsecret';
+
+                // Simpan makanan dengan data asli dari API (takaran & kandungan gizi sesuai API)
+                $food = Food::firstOrCreate(
+                    ['name' => $foodNameWithServing],
+                    [
+                        'category'     => $category,
+                        'energy'       => (float)($servingData['calories'] ?? 0),
+                        'protein'      => (float)($servingData['protein'] ?? 0),
+                        'fat'          => (float)($servingData['fat'] ?? 0),
+                        'carbohydrate' => (float)($servingData['carbohydrate'] ?? 0),
+                        'created_by'   => auth()->id(),
+                    ]
+                );
+            }
+
+            return back()->with('success', 'Semua takaran makanan dari "' . $foodData['food_name'] . '" berhasil ditambahkan!');
+        }
+
+        return back()->with('error', 'Format data dari FatSecret tidak sesuai.');
+    } catch (\Exception $e) {
+        \Log::error('Add from FatSecret exception', ['exception' => $e->getMessage()]);
+        return back()->with('error', 'Terjadi kesalahan sistem saat menambah makanan.');
     }
+}
+
 
 }

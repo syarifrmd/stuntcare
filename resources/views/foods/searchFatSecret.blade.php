@@ -51,19 +51,43 @@
                                         @endif
                                     </div>
                                     
-                                    <form method="POST" action="{{ route('food.addFromFatSecret') }}" class="ml-4">
-                                        @csrf
-                                        <input type="hidden" name="food_id" value="{{ $food['food_id'] ?? '' }}">
-                                        <input type="hidden" name="food_name" value="{{ $food['food_name'] ?? '' }}">
-                                        <input type="hidden" name="region" value="{{ request('region', 'ID') }}">
-                                        <input type="hidden" name="language" value="{{ request('language', 'id') }}">
-                                        <button 
-                                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors text-sm" 
-                                            type="submit"
-                                        >
-                                            Tambah ke Database
-                                        </button>
-                                    </form>
+                                    @php
+                                        // Daftar kategori enum yang valid di DB, update sesuai enum di model Food
+                                        $validCategories = ['buah', 'sayur', 'daging', 'minuman', 'lainnya'];
+                                        // Mapping kategori FatSecret ke enum DB
+                                        $categoryMap = [
+                                            'Generic' => 'buah',
+                                            'Brand' => 'lainnya',
+                                            // tambahkan mapping lain sesuai enum DB
+                                        ];
+                                        $fatSecretCategory = $food['food_type'] ?? null;
+                                        $dbCategory = $categoryMap[$fatSecretCategory] ?? null;
+                                        $isValidCategory = $dbCategory && in_array($dbCategory, $validCategories);
+                                    @endphp
+                                    @if($isValidCategory)
+                                        <form method="POST" action="{{ route('food.addFromFatSecret') }}" class="ml-4">
+                                            @csrf
+                                            <input type="hidden" name="food_id" value="{{ $food['food_id'] ?? '' }}">
+                                            <input type="hidden" name="food_name" value="{{ $food['food_name'] ?? '' }}">
+                                            <input type="hidden" name="category" value="{{ $dbCategory }}">
+                                            <button 
+                                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors text-sm" 
+                                                type="submit"
+                                            >
+                                                Tambah ke Database
+                                            </button>
+                                        </form>
+                                    @else
+                                        <div class="ml-4">
+                                            <button 
+                                                class="px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed text-sm" 
+                                                type="button" disabled
+                                            >
+                                                Kategori tidak valid
+                                            </button>
+                                            <p class="text-xs text-red-500 mt-1">Kategori FatSecret: <strong>{{ $fatSecretCategory ?? 'Tidak tersedia' }}</strong> tidak bisa ditambahkan ke database.</p>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
