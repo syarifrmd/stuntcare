@@ -36,8 +36,8 @@ return [
     ],
 
     'fatsecret' => [
-        'consumer_key' => env('FATSECRET_CONSUMER_KEY', 'c156003aeb31402a8610f24c5ef0869d'),
-        'consumer_secret' => env('FATSECRET_CONSUMER_SECRET', '7239d4c7a72d4fc39b1229d886a1b407'),
+        'client_id' => env('FATSECRET_CLIENT_ID', 'c156003aeb31402a8610f24c5ef0869d'),
+        'client_secret' => env('FATSECRET_CLIENT_SECRET', '84bc3a49db974af3a5fb5e69b24c3071'),
     ],
 
 ];

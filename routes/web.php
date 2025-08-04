@@ -126,4 +126,7 @@ Route::get('/notifikasi', [NotifikasiController::class, 'riwayat'])->name('notif
 Route::get('/notifikasi/{id}/read', [NotifikasiController::class, 'tandaiDibaca'])->name('notifikasi.read');
 Route::post('/notifikasi/read-all', [NotifikasiController::class, 'tandaiSemuaDibaca'])->name('notifikasi.readAll');
 
+Route::get('/foods/search-fatsecret', [FoodController::class, 'searchFatSecret'])->name('food.searchFatSecret');
+Route::post('/foods/add-fatsecret', [FoodController::class, 'addFromFatSecret'])->name('food.addFromFatSecret');
+
 

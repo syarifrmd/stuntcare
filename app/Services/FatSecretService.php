@@ -7,98 +7,320 @@ use Illuminate\Support\Str;
 
 class FatSecretService
 {
-    protected $consumerKey;
-    protected $consumerSecret;
+    protected $clientId;
+    protected $clientSecret;
     protected $baseUrl = 'https://platform.fatsecret.com/rest/server.api';
+    protected $tokenUrl = 'https://oauth.fatsecret.com/connect/token';
+    protected $accessToken;
 
     public function __construct()
     {
-        $this->consumerKey = config('services.fatsecret.consumer_key');
-        $this->consumerSecret = config('services.fatsecret.consumer_secret');
+        $this->clientId = config('services.fatsecret.client_id');
+        $this->clientSecret = config('services.fatsecret.client_secret');
+        
+        // Debug: Log credentials (remove in production)
+        \Log::info('FatSecret credentials', [
+            'client_id' => $this->clientId ? 'set' : 'not set',
+            'client_secret' => $this->clientSecret ? 'set' : 'not set'
+        ]);
+        
+        $this->accessToken = $this->getAccessToken();
     }
 
-    protected function generateOAuthParams($method)
+    protected function getAccessToken()
     {
-        $params = [
-            'oauth_consumer_key' => $this->consumerKey,
-            'oauth_nonce' => Str::random(32),
-            'oauth_signature_method' => 'HMAC-SHA1',
-            'oauth_timestamp' => time(),
-            'oauth_version' => '1.0',
-            'format' => 'json',
-            'method' => $method
-        ];
-
-        return $params;
+        try {
+            $response = Http::asForm()->post($this->tokenUrl, [
+                'grant_type' => 'client_credentials',
+                'scope' => 'basic',
+                'client_id' => $this->clientId,
+                'client_secret' => $this->clientSecret,
+            ]);
+            
+            \Log::info('FatSecret token response', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+            
+            if ($response->successful() && isset($response['access_token'])) {
+                \Log::info('FatSecret token obtained successfully');
+                return $response['access_token'];
+            }
+            
+            \Log::error('FatSecret getAccessToken error', [
+                'status' => $response->status(),
+                'response' => $response->json(),
+                'body' => $response->body()
+            ]);
+            return null;
+        } catch (\Exception $e) {
+            \Log::error('FatSecret getAccessToken exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return null;
+        }
     }
 
-    protected function generateSignature($params, $method = 'GET')
+    public function searchFood($query, $page = 1, $maxResults = 20, $region = 'ID')
     {
-        $baseString = $method . '&' . rawurlencode($this->baseUrl) . '&';
-        $paramString = http_build_query($params);
-        $baseString .= rawurlencode($paramString);
-
-        $key = rawurlencode($this->consumerSecret) . '&';
-        $signature = base64_encode(hash_hmac('sha1', $baseString, $key, true));
-
-        return $signature;
-    }
-
-    public function searchFood($query, $page = 1, $maxResults = 20)
-    {
-        $params = $this->generateOAuthParams('foods.search');
-        $params['search_expression'] = $query;
-        $params['page_number'] = $page;
-        $params['max_results'] = $maxResults;
-
-        $params['oauth_signature'] = $this->generateSignature($params);
-
-        $response = Http::get($this->baseUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json();
+        if (!$this->accessToken) {
+            \Log::error('FatSecret searchFood: No access token available');
+            return [
+                'error' => true,
+                'message' => 'No access token available. Please check FatSecret credentials.',
+                'response' => null,
+            ];
         }
 
-        return [
-            'error' => true,
-            'message' => 'Failed to fetch food data from FatSecret API'
-        ];
+        try {
+            // FatSecret API expects form data, not JSON
+            $params = [
+                'method' => 'foods.search',
+                'search_expression' => $query,
+                'page_number' => $page,
+                'max_results' => $maxResults,
+                'format' => 'json',
+                'locale' => 'id_ID', // Set locale to Indonesian
+                'region' => $region, // Set region to Indonesia
+            ];
+            
+            \Log::info('FatSecret searchFood request', [
+                'params' => $params,
+                'token' => substr($this->accessToken, 0, 20) . '...'
+            ]);
+            
+            $response = Http::withToken($this->accessToken)
+                ->asForm()
+                ->post($this->baseUrl, $params);
+                
+            \Log::info('FatSecret searchFood response', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+            
+            if ($response->successful()) {
+                $json = $response->json();
+                
+                // Check if we have a valid response structure
+                if (isset($json['foods']) && isset($json['foods']['food'])) {
+                    \Log::info('FatSecret searchFood: Valid response structure found');
+                    return $json;
+                } elseif (isset($json['foods']) && is_array($json['foods'])) {
+                    // Sometimes the food might be directly in foods array
+                    \Log::info('FatSecret searchFood: Foods array found');
+                    return $json;
+                } else {
+                    \Log::warning('FatSecret searchFood: Invalid response structure', [
+                        'response' => $json,
+                        'available_keys' => isset($json) ? array_keys($json) : 'null'
+                    ]);
+                    return [
+                        'error' => true,
+                        'message' => 'Invalid response structure from FatSecret API',
+                        'response' => $json,
+                    ];
+                }
+            }
+            
+            return [
+                'error' => true,
+                'message' => 'Failed to fetch food data from FatSecret API',
+                'response' => $response->body(),
+                'status' => $response->status(),
+            ];
+        } catch (\Exception $e) {
+            \Log::error('FatSecret searchFood exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return [
+                'error' => true,
+                'message' => 'Exception occurred: ' . $e->getMessage(),
+                'response' => null,
+            ];
+        }
     }
 
-    public function getFoodDetails($foodId)
+    public function getFoodDetails($foodId, $region = 'ID')
     {
-        $params = $this->generateOAuthParams('food.get');
-        $params['food_id'] = $foodId;
-
-        $params['oauth_signature'] = $this->generateSignature($params);
-
-        $response = Http::get($this->baseUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json();
+        if (!$this->accessToken) {
+            return [
+                'error' => true,
+                'message' => 'No access token available. Please check FatSecret credentials.',
+                'response' => null,
+            ];
         }
 
-        return [
-            'error' => true,
-            'message' => 'Failed to fetch food details from FatSecret API'
-        ];
+        try {
+            $params = [
+                'method' => 'food.get',
+                'food_id' => $foodId,
+                'format' => 'json',
+                'locale' => 'id_ID', // Set locale to Indonesian
+                'region' => $region, // Set region to Indonesia
+            ];
+            
+            $response = Http::withToken($this->accessToken)
+                ->asForm()
+                ->post($this->baseUrl, $params);
+                
+            if ($response->successful()) {
+                return $response->json();
+            }
+            
+            return [
+                'error' => true,
+                'message' => 'Failed to fetch food details from FatSecret API',
+                'response' => $response->body(),
+                'status' => $response->status(),
+            ];
+        } catch (\Exception $e) {
+            \Log::error('FatSecret getFoodDetails exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return [
+                'error' => true,
+                'message' => 'Exception occurred: ' . $e->getMessage(),
+                'response' => null,
+            ];
+        }
     }
 
-    public function getFoodCategories()
+    public function getFoodCategories($region = 'ID')
     {
-        $params = $this->generateOAuthParams('food_categories.get');
-
-        $params['oauth_signature'] = $this->generateSignature($params);
-
-        $response = Http::get($this->baseUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json();
+        if (!$this->accessToken) {
+            return [
+                'error' => true,
+                'message' => 'No access token available. Please check FatSecret credentials.',
+                'response' => null,
+            ];
         }
 
-        return [
-            'error' => true,
-            'message' => 'Failed to fetch food categories from FatSecret API'
-        ];
+        try {
+            $params = [
+                'method' => 'food_categories.get',
+                'format' => 'json',
+                'locale' => 'id_ID', // Set locale to Indonesian
+                'region' => $region, // Set region to Indonesia
+            ];
+            
+            $response = Http::withToken($this->accessToken)
+                ->asForm()
+                ->post($this->baseUrl, $params);
+                
+            if ($response->successful()) {
+                return $response->json();
+            }
+            
+            return [
+                'error' => true,
+                'message' => 'Failed to fetch food categories from FatSecret API',
+                'response' => $response->body(),
+                'status' => $response->status(),
+            ];
+        } catch (\Exception $e) {
+            \Log::error('FatSecret getFoodCategories exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return [
+                'error' => true,
+                'message' => 'Exception occurred: ' . $e->getMessage(),
+                'response' => null,
+            ];
+        }
     }
-} 
+
+    public function foodsSearchV3($query, $page = 0, $maxResults = 20, $region = 'ID', $language = 'id')
+    {
+        if (!$this->accessToken) {
+            \Log::error('FatSecret foodsSearchV3: No access token available');
+            return [
+                'error' => true,
+                'message' => 'No access token available. Please check FatSecret credentials.',
+                'response' => null,
+            ];
+        }
+
+        try {
+            $url = 'https://platform.fatsecret.com/rest/foods/search/v3';
+            $params = [
+                'search_expression' => $query,
+                'page_number' => $page, // zero-based
+                'max_results' => $maxResults,
+                'region' => $region,
+                'language' => $language,
+                'format' => 'json',
+            ];
+            
+            \Log::info('FatSecret foodsSearchV3 request', [
+                'url' => $url,
+                'params' => $params,
+                'token' => substr($this->accessToken, 0, 20) . '...'
+            ]);
+            
+            $response = Http::withToken($this->accessToken)
+                ->get($url, $params);
+                
+            \Log::info('FatSecret foodsSearchV3 response', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+            
+            if ($response->successful()) {
+                $json = $response->json();
+                
+                // Check if we have a premier scope error
+                if (isset($json['error']) && isset($json['error']['code']) && $json['error']['code'] == 14) {
+                    \Log::warning('FatSecret foodsSearchV3: Premier scope required, falling back to v2 API');
+                    // Fallback to v2 API
+                    return $this->searchFood($query, $page + 1, $maxResults, $region);
+                }
+                
+                // Check if we have a valid response structure
+                if (isset($json['foods']) && isset($json['foods']['food'])) {
+                    \Log::info('FatSecret foodsSearchV3: Valid response structure found');
+                    return $json;
+                } elseif (isset($json['foods']) && is_array($json['foods'])) {
+                    // Sometimes the food might be directly in foods array
+                    \Log::info('FatSecret foodsSearchV3: Foods array found');
+                    return $json;
+                } else {
+                    \Log::warning('FatSecret foodsSearchV3: Invalid response structure', [
+                        'response' => $json,
+                        'available_keys' => isset($json) ? array_keys($json) : 'null'
+                    ]);
+                    return [
+                        'error' => true,
+                        'message' => 'Invalid response structure from FatSecret API v3',
+                        'response' => $json,
+                    ];
+                }
+            }
+            
+            return [
+                'error' => true,
+                'message' => 'Failed to fetch food data from FatSecret API v3',
+                'response' => $response->body(),
+                'status' => $response->status(),
+            ];
+        } catch (\Exception $e) {
+            \Log::error('FatSecret foodsSearchV3 exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return [
+                'error' => true,
+                'message' => 'Exception occurred: ' . $e->getMessage(),
+                'response' => null,
+            ];
+        }
+    }
+}
