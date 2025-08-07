@@ -39,19 +39,32 @@ class FatSecretService
             
             \Log::info('FatSecret token response', [
                 'status' => $response->status(),
+                'headers' => $response->headers(),
                 'body' => $response->body()
             ]);
             
-            if ($response->successful() && isset($response['access_token'])) {
-                \Log::info('FatSecret token obtained successfully');
-                return $response['access_token'];
+            if ($response->successful()) {
+                $tokenData = $response->json();
+                if (isset($tokenData['access_token'])) {
+                    \Log::info('FatSecret token obtained successfully', [
+                        'token_type' => $tokenData['token_type'] ?? 'unknown',
+                        'expires_in' => $tokenData['expires_in'] ?? 'unknown'
+                    ]);
+                    return $tokenData['access_token'];
+                } else {
+                    \Log::error('FatSecret token response missing access_token', [
+                        'available_keys' => array_keys($tokenData),
+                        'response' => $tokenData
+                    ]);
+                }
+            } else {
+                \Log::error('FatSecret token request failed', [
+                    'status' => $response->status(),
+                    'response' => $response->json(),
+                    'body' => $response->body()
+                ]);
             }
             
-            \Log::error('FatSecret getAccessToken error', [
-                'status' => $response->status(),
-                'response' => $response->json(),
-                'body' => $response->body()
-            ]);
             return null;
         } catch (\Exception $e) {
             \Log::error('FatSecret getAccessToken exception', [
@@ -60,6 +73,47 @@ class FatSecretService
                 'line' => $e->getLine()
             ]);
             return null;
+        }
+    }
+
+    /**
+     * Test API connection and credentials
+     */
+    public function testConnection()
+    {
+        if (!$this->clientId || !$this->clientSecret) {
+            return [
+                'success' => false,
+                'message' => 'FatSecret credentials not configured'
+            ];
+        }
+
+        if (!$this->accessToken) {
+            return [
+                'success' => false,
+                'message' => 'Failed to obtain access token'
+            ];
+        }
+
+        // Try a simple search to test the connection
+        try {
+            $result = $this->searchFood('apple', 1, 1);
+            if (isset($result['error'])) {
+                return [
+                    'success' => false,
+                    'message' => 'API test failed: ' . $result['message']
+                ];
+            }
+            
+            return [
+                'success' => true,
+                'message' => 'FatSecret API connection successful'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Connection test exception: ' . $e->getMessage()
+            ];
         }
     }
 
@@ -82,8 +136,8 @@ class FatSecretService
                 'page_number' => $page,
                 'max_results' => $maxResults,
                 'format' => 'json',
-                'locale' => 'id_ID', // Set locale to Indonesian
-                'region' => $region, // Set region to Indonesia
+                'locale' => 'id_ID', 
+                'region' => $region, 
             ];
             
             \Log::info('FatSecret searchFood request', [
@@ -103,18 +157,60 @@ class FatSecretService
             if ($response->successful()) {
                 $json = $response->json();
                 
-                // Check if we have a valid response structure
-                if (isset($json['foods']) && isset($json['foods']['food'])) {
-                    \Log::info('FatSecret searchFood: Valid response structure found');
-                    return $json;
-                } elseif (isset($json['foods']) && is_array($json['foods'])) {
-                    // Sometimes the food might be directly in foods array
-                    \Log::info('FatSecret searchFood: Foods array found');
-                    return $json;
-                } else {
-                    \Log::warning('FatSecret searchFood: Invalid response structure', [
+                // Log the full response structure for debugging
+                \Log::info('FatSecret API response structure', [
+                    'response_keys' => isset($json) ? array_keys($json) : 'null',
+                    'full_response' => $json
+                ]);
+                
+                // Handle different response structures
+                if (isset($json['foods'])) {
+                    // Case 1: Response has 'foods' key
+                    if (isset($json['foods']['food'])) {
+                        // Case 1a: foods.food exists (normal structure)
+                        \Log::info('FatSecret searchFood: Normal response structure found');
+                        return $json;
+                    } elseif (is_array($json['foods'])) {
+                        // Case 1b: foods is array directly
+                        \Log::info('FatSecret searchFood: Foods array structure found');
+                        return $json;
+                    } else {
+                        // Case 1c: foods exists but no food data
+                        \Log::warning('FatSecret searchFood: Foods key exists but no food data', [
+                            'foods_content' => $json['foods']
+                        ]);
+                        return [
+                            'error' => true,
+                            'message' => 'No food data found in response',
+                            'response' => $json,
+                        ];
+                    }
+                } elseif (isset($json['error'])) {
+                    // Case 2: API returned an error
+                    \Log::error('FatSecret API returned error', [
+                        'error' => $json['error']
+                    ]);
+                    return [
+                        'error' => true,
+                        'message' => 'API Error: ' . ($json['error']['message'] ?? 'Unknown error'),
                         'response' => $json,
-                        'available_keys' => isset($json) ? array_keys($json) : 'null'
+                    ];
+                } elseif (empty($json) || !is_array($json)) {
+                    // Case 3: Empty or invalid response
+                    \Log::warning('FatSecret searchFood: Empty or invalid JSON response', [
+                        'response_type' => gettype($json),
+                        'response' => $json
+                    ]);
+                    return [
+                        'error' => true,
+                        'message' => 'Empty or invalid response from FatSecret API',
+                        'response' => $json,
+                    ];
+                } else {
+                    // Case 4: Unknown structure
+                    \Log::warning('FatSecret searchFood: Unknown response structure', [
+                        'response' => $json,
+                        'available_keys' => array_keys($json)
                     ]);
                     return [
                         'error' => true,
@@ -124,9 +220,15 @@ class FatSecretService
                 }
             }
             
+            // Handle HTTP errors
+            \Log::error('FatSecret API HTTP error', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+            
             return [
                 'error' => true,
-                'message' => 'Failed to fetch food data from FatSecret API',
+                'message' => 'HTTP Error ' . $response->status() . ': Failed to fetch food data from FatSecret API',
                 'response' => $response->body(),
                 'status' => $response->status(),
             ];
@@ -159,8 +261,8 @@ class FatSecretService
                 'method' => 'food.get',
                 'food_id' => $foodId,
                 'format' => 'json',
-                'locale' => 'id_ID', // Set locale to Indonesian
-                'region' => $region, // Set region to Indonesia
+                'locale' => 'id_ID', 
+                'region' => $region, 
             ];
             
             $response = Http::withToken($this->accessToken)
