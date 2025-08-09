@@ -33,7 +33,7 @@
                                          class="w-full h-full object-cover"
                                          id="preview-image">
                                 @else
-                                    <img src="https://avatar.iran.liara.run/username?username={{ urlencode(Auth::user()->name) }}" 
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=ec4899&color=ffffff&size=120&rounded=true" 
                                          alt="Default Avatar" 
                                          class="w-full h-full object-cover"
                                          id="preview-image">

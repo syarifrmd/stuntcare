@@ -83,7 +83,7 @@
                                      @if(Auth::user()->fotoprofil)
                                         <img src="{{ asset('storage/fotoprofil/' . Auth::user()->fotoprofil) }}" alt="Foto Profil" class="w-full h-full object-cover">
                                     @else
-                                        <img src="https://avatar.iran.liara.run/username?username={{ Auth::user()->name }}" alt="Default Avatar" class="w-full h-full object-cover">
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=ec4899&color=ffffff&size=40&rounded=true" alt="Default Avatar" class="w-full h-full object-cover">
                                     @endif
                         </div>
                         <div class="ml-2 hidden lg:block text-left">
@@ -122,7 +122,7 @@
                                      @if(Auth::user()->fotoprofil)
                                         <img src="{{ asset('storage/fotoprofil/' . Auth::user()->fotoprofil) }}" alt="Foto Profil" class="w-full h-full object-cover">
                                     @else
-                                        <img src="https://avatar.iran.liara.run/username?username={{ Auth::user()->name }}" alt="Default Avatar" class="w-full h-full object-cover">
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=ec4899&color=ffffff&size=40&rounded=true" alt="Default Avatar" class="w-full h-full object-cover">
                                     @endif
                         </div>
                     </button>

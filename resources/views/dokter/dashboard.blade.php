@@ -261,7 +261,7 @@
                                             @if(Auth::user()->fotoprofil)
                                                 <img src="{{ asset('storage/fotoprofil/' . Auth::user()->fotoprofil) }}" alt="Foto Profil">
                                             @else
-                                                <img src="https://avatar.iran.liara.run/username?username={{ urlencode(Auth::user()->name) }}" alt="Default Avatar">
+                                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=ec4899&color=ffffff&size=120&rounded=true" alt="Default Avatar">
                                             @endif
                                         </div>
                                         <div class="space-y-2 mb-4">

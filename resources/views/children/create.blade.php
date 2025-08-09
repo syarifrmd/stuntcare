@@ -133,8 +133,8 @@
                                     <div class="flex items-center gap-4 mb-4">
                                     @php
                                         $avatarUrl = $child->gender === 'L'
-                                            ? 'https://avatar.iran.liara.run/public/boy'
-                                            : 'https://avatar.iran.liara.run/public/girl';
+                                            ? 'https://ui-avatars.com/api/?name=Boy&background=3b82f6&color=ffffff&size=120&rounded=true'
+                                            : 'https://ui-avatars.com/api/?name=Girl&background=ec4899&color=ffffff&size=120&rounded=true';
                                     @endphp
 
                                     <div class="w-12 h-12 rounded-full overflow-hidden bg-pink-200 border border-pink-300">
