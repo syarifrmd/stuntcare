@@ -5,39 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StuntCare - Tumbuh Kembang Optimal</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-        window.userId = {{ Auth::id() }};
-    </script>
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof window.Echo === 'undefined') {
-                console.error('Laravel Echo belum terinisialisasi!');
-                return;
-            }
-            if (!window.userId) {
-                console.error('User ID tidak ditemukan!');
-                return;
-            }
-            window.Echo.private('user.' + window.userId)
-                .listen('MealReminderNotification', (e) => {
-                    showWebNotification(e.message);
-                })
-                .listen('DailyNutritionNotification', (e) => {
-                    showWebNotification(e.message);
-                });
-
-            function showWebNotification(message) {
-                if (Notification.permission === 'granted') {
-                    new Notification('StuntCare', { body: message, icon: '/logo.png' });
-                } else if (Notification.permission !== 'denied') {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            new Notification('StuntCare', { body: message, icon: '/logo.png' });
-                        }
-                    });
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pink-stunt': '#FF69B4', // Main brand pink
+                        'pink-light': '#FFD1DC', // Lighter pink
+                        'pink-dark': '#D1478E',  // Darker pink for hover/accents
+                    }
                 }
             }
-        });
+        }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -216,23 +195,6 @@
     </div>
 
     <livewire:chatbot />
-    <script src="{{ asset('/sw.js') }}"></script>
-    <script>
-    if ("serviceWorker" in navigator) {
-        // Register a service worker hosted at the root of the
-        // site using the default scope.
-        navigator.serviceWorker.register("/sw.js").then(
-        (registration) => {
-            console.log("Service worker registration succeeded:", registration);
-        },
-        (error) => {
-            console.error(`Service worker registration failed: ${error}`);
-        },
-        );
-    } else {
-        console.error("Service workers are not supported.");
-    }
-    </script>
     <script src="{{ asset('pwa-install.js') }}"></script>
 
     <script>
@@ -334,7 +296,13 @@
                 });
             }
         });
-    </script>
+
+            <!-- Include notification and service worker scripts for authenticated users -->
+    @auth
+        <x-notification-scripts />
+    @endauth
+
+    
 </x-app-layout>
 </body>
 </html>

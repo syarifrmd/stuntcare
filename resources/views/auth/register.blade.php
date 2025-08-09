@@ -69,5 +69,10 @@
              style="background-image: url('{{ asset('images/dokterlaptop.png') }}'); background-size: contain;">
         </div>
     </div>
+    
+    <!-- Include notification and service worker scripts for authenticated users -->
+    @auth
+        <x-notification-scripts />
+    @endauth
 </body>
 </html>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\KonsultasiDokter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ConsultationBooked;
 
 class KonsultasiDokterController extends Controller
 {
@@ -36,6 +37,9 @@ class KonsultasiDokterController extends Controller
                 'status' => 'Memesan',
             ]);
 
+            // Trigger event untuk notifikasi pemesanan
+            event(new ConsultationBooked($jadwal));
+
             return redirect()->route('konsultasidokter.index')->with('success', 'Berhasil memesan jadwal.');
         }
 
@@ -50,6 +54,9 @@ class KonsultasiDokterController extends Controller
 
         if ($jadwal->status === 'Memesan') {
             $jadwal->update(['status' => 'Dipesan']);
+            
+            // Event sudah dipanggil di DokterController, tidak perlu duplikat di sini
+            
             return redirect()->route('konsultasidokter.index')->with('success', 'Jadwal dikonfirmasi');
         }
 

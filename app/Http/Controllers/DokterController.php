@@ -6,6 +6,7 @@ use App\Models\KonsultasiDokter;
 use App\Models\Artikel; // Pastikan model Artikel ada dan di-namespace dengan benar
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ConsultationConfirmed;
 
 class DokterController extends Controller
 {
@@ -135,7 +136,10 @@ class DokterController extends Controller
             $jadwal->update([
                 'status' => 'Dipesan', // Ubah status menjadi "Dipesan"
             ]);
-            // Kirim notifikasi ke user jika perlu
+            
+            // Trigger event untuk notifikasi konfirmasi konsultasi
+            event(new ConsultationConfirmed($jadwal));
+            
             return redirect()->route('dokter.konsultasi.index')->with('success', 'Pemesanan jadwal berhasil dikonfirmasi.');
         }
 

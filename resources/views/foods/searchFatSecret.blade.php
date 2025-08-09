@@ -534,6 +534,11 @@
         [x-cloak] { display: none !important; }
         .font-inter { font-family: 'Inter', sans-serif; }
     </style>
+
+    <!-- Include notification and service worker scripts -->
+    @auth
+        <x-notification-scripts />
+    @endauth
 </body>
 </html>
 

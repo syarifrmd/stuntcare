@@ -614,5 +614,10 @@ function hideErrorNotification() {
     }, 500);
 }
 </script>
+
+<!-- Include notification and service worker scripts -->
+@auth
+    <x-notification-scripts />
+@endauth
 </body>
 </html>

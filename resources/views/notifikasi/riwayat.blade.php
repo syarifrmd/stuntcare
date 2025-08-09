@@ -7,40 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script>
-        window.userId = {{ Auth::id() }};
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof window.Echo === 'undefined') {
-                console.error('Laravel Echo belum terinisialisasi!');
-                return;
-            }
-            if (!window.userId) {
-                console.error('User ID tidak ditemukan!');
-                return;
-            }
-            window.Echo.private('user.' + window.userId)
-                .listen('MealReminderNotification', (e) => {
-                    showWebNotification(e.message);
-                })
-                .listen('DailyNutritionNotification', (e) => {
-                    showWebNotification(e.message);
-                });
-
-            function showWebNotification(message) {
-                if (Notification.permission === 'granted') {
-                    new Notification('StuntCare', { body: message, icon: '/logo.png' });
-                } else if (Notification.permission !== 'denied') {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            new Notification('StuntCare', { body: message, icon: '/logo.png' });
-                        }
-                    });
-                }
-            }
-        });
-    </script>
 </head>
 <body class="bg-gradient-to-br from-pink-50 to-white min-h-screen">
     <!-- Header with Back Button -->
@@ -81,10 +47,22 @@
                                 <!-- Notification Icon -->
                                 <div class="flex-shrink-0">
                                     <div class="w-12 h-12 rounded-full flex items-center justify-center {{ is_null($notif->read_at) ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-400' }}">
-                                        @if(str_contains($notif->data['message'] ?? '', 'makan'))
+                                        @php
+                                            $message = '';
+                                            if (isset($notif->data['message'])) {
+                                                if (is_array($notif->data['message'])) {
+                                                    $message = implode(' ', $notif->data['message']);
+                                                } else {
+                                                    $message = $notif->data['message'];
+                                                }
+                                            }
+                                        @endphp
+                                        @if(str_contains(strtolower($message), 'makan'))
                                             <i class="fas fa-utensils text-lg"></i>
-                                        @elseif(str_contains($notif->data['message'] ?? '', 'nutrisi'))
+                                        @elseif(str_contains(strtolower($message), 'nutrisi'))
                                             <i class="fas fa-apple-alt text-lg"></i>
+                                        @elseif(str_contains(strtolower($message), 'konsultasi'))
+                                            <i class="fas fa-user-md text-lg"></i>
                                         @else
                                             <i class="fas fa-info text-lg"></i>
                                         @endif
@@ -96,7 +74,17 @@
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1">
                                             <p class="font-medium text-gray-900 leading-relaxed mb-2">
-                                                {{ $notif->data['message'] ?? 'Notifikasi' }}
+                                                @php
+                                                    $displayMessage = 'Notifikasi';
+                                                    if (isset($notif->data['message'])) {
+                                                        if (is_array($notif->data['message'])) {
+                                                            $displayMessage = implode(' ', $notif->data['message']);
+                                                        } else {
+                                                            $displayMessage = $notif->data['message'];
+                                                        }
+                                                    }
+                                                @endphp
+                                                {{ $displayMessage }}
                                             </p>
                                             <div class="flex items-center space-x-2 text-sm text-gray-500">
                                                 <i class="fas fa-clock text-xs"></i>
@@ -162,5 +150,10 @@
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
+
+    <!-- Include notification and service worker scripts -->
+    @auth
+        <x-notification-scripts />
+    @endauth
 </body>
 </html>

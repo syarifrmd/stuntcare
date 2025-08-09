@@ -26,5 +26,10 @@
                 {{ $slot }}
             </div>
         </div>
+        
+        <!-- Include notification and service worker scripts for authenticated users -->
+        @auth
+            <x-notification-scripts />
+        @endauth
     </body>
 </html>

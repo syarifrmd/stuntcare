@@ -753,7 +753,12 @@
             });
         });
     </script>
-     <script src="{{ asset('pwa-install.js') }}"></script>
+    <script src="{{ asset('pwa-install.js') }}"></script>
+    
+    <!-- Include notification and service worker scripts for authenticated users -->
+    @auth
+        <x-notification-scripts />
+    @endauth
     
 </body>
 </html>

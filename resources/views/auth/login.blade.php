@@ -65,5 +65,10 @@
         <div class="hidden lg:flex justify-center items-center bg-cover bg-center order-1 lg:order-2" style="background-image: url('{{ asset('images/dokterpesan.png') }}'); background-size: contain; background-repeat: no-repeat;">
         </div>
     </div>
+    
+    <!-- Include notification and service worker scripts for authenticated users -->
+    @auth
+        <x-notification-scripts />
+    @endauth
 </body>
 </html>

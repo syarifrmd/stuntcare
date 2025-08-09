@@ -575,5 +575,10 @@
         });
     </script>
 
+    <!-- Include notification and service worker scripts -->
+    @auth
+        <x-notification-scripts />
+    @endauth
+
 </body>
 </html>

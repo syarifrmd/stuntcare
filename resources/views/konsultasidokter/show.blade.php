@@ -40,6 +40,10 @@
         </div>
     </div>
 
+    <!-- Include notification and service worker scripts -->
+    @auth
+        <x-notification-scripts />
+    @endauth
+
 </body>
 </html>
-@endsection
